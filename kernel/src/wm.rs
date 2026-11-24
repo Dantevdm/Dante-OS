@@ -6,7 +6,7 @@
 //! keeps it smooth without needing a GPU.
 
 use alloc::boxed::Box;
-use alloc::string::ToString;
+use alloc::string::{String, ToString};
 use alloc::vec;
 use alloc::vec::Vec;
 
@@ -38,6 +38,7 @@ struct Window {
     app: Box<dyn App>,
     focused: bool,
     close_hover: bool,
+    title: String,
     opened: u64,
 }
 
@@ -51,6 +52,7 @@ impl Window {
             app,
             focused: false,
             close_hover: false,
+            title: String::new(),
             opened: now,
         };
         let all = win.surface.bounds();
@@ -167,7 +169,8 @@ impl Window {
         let (x, y) = ((M + PAD_X) as usize, (M + 17) as usize);
         let (cx, cy) = self.close_center();
         let s = &mut self.surface;
-        s.text(x, y, self.app.kind().title(), f, wt, name, 0, 1.0);
+        self.title = self.app.title();
+        s.text(x, y, &self.title, f, wt, name, 0, 1.0);
         if self.close_hover {
             s.disc(cx as f32, cy as f32, 6.5, TERRACOTTA);
             s.line(cx as f32 - 2.5, cy as f32 - 2.5, cx as f32 + 2.5, cy as f32 + 2.5, PAPER, 1.0);
@@ -294,7 +297,11 @@ impl Wm {
     // ---- Windows ----
 
     pub fn open(&mut self, kind: AppKind, now: u64) {
-        let app = apps::create(kind);
+        self.open_app(apps::create(kind), now);
+    }
+
+    fn open_app(&mut self, app: Box<dyn App>, now: u64) {
+        let kind = app.kind();
         let (fw, fh) = app.size();
         let k = (self.next_id as i32 - 1) % 6;
         let x = (MARGIN + k * 48).min(self.w - fw - 24).max(8);
@@ -308,7 +315,8 @@ impl Wm {
     }
 
     fn close(&mut self, index: usize, _now: u64) {
-        let win = self.windows.remove(index);
+        let mut win = self.windows.remove(index);
+        win.app.close();
         self.dirty.push(win.full_rect());
         if self.drag.is_some() {
             self.drag = None;
@@ -355,6 +363,35 @@ impl Wm {
         }
     }
 
+    /// Show a file: bring forward the window that has it, or open one.
+    fn open_file(&mut self, path: &str, now: u64) {
+        match self.windows.iter().rposition(|w| w.app.file() == Some(path)) {
+            Some(i) => {
+                self.raise(i, now);
+                self.focus_top(true);
+            }
+            None => self.open_app(apps::open_file(path), now),
+        }
+    }
+
+    /// Repaint the title bar of any window whose title changed.
+    fn refresh_titles(&mut self, now: u64) {
+        for win in self.windows.iter_mut() {
+            if win.app.title() != win.title {
+                win.paint_title();
+                let r = win.title_rect();
+                self.dirty.push(win.to_screen(r, now));
+            }
+        }
+        let app = match (self.focused, self.windows.last()) {
+            (true, Some(w)) => w.app.kind().title(),
+            _ => "",
+        };
+        if self.bar.set_app(app) {
+            self.dirty.push(self.bar.rect());
+        }
+    }
+
     /// Bring an app forward, or open it if it isn't running.
     fn activate(&mut self, kind: AppKind, now: u64) {
         match self.windows.iter().rposition(|w| w.app.kind() == kind) {
@@ -381,9 +418,12 @@ impl Wm {
 
     /// Carry out what an app asked for. `id` is the window that asked.
     fn handle(&mut self, id: u32, requests: Vec<Request>, now: u64) {
+        self.refresh_titles(now);
         for r in requests {
             match r {
-                Request::Open(kind) => self.open(kind, now),
+                Request::Open(kind) => self.activate(kind, now),
+                Request::OpenFile(path) => self.open_file(&path, now),
+                Request::OpenFolder(path) => self.open_app(apps::open_folder(&path), now),
                 Request::Close => {
                     if let Some(i) = self.windows.iter().position(|w| w.id == id) {
                         self.close(i, now);
@@ -397,7 +437,10 @@ impl Wm {
 
     fn act(&mut self, action: Action, now: u64) {
         match action {
-            Action::Open(kind) => self.open(kind, now),
+            Action::Open(kind) => self.activate(kind, now),
+            Action::OpenFile(path) => self.open_file(&path, now),
+            Action::OpenFolder(path) => self.open_app(apps::open_folder(&path), now),
+            Action::NewNote => self.open_app(apps::new_note(), now),
             Action::Run(cmd) => {
                 let i = match self.windows.iter().rposition(|w| w.app.kind() == AppKind::Terminal) {
                     Some(i) => i,
@@ -646,6 +689,7 @@ impl Wm {
                 self.dirty.push(win.to_screen(r, now));
             }
         }
+        self.refresh_titles(now);
         if self.dock.tick() {
             self.dirty.push(self.dock.rect());
         }

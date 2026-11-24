@@ -1,6 +1,8 @@
-//! Notes: a ruled page to write on. Kept in memory until Dante has a disk.
+//! Notes: a ruled page to write on. Each note is a text file in /Notes,
+//! saved a moment after you stop typing and again when the window closes.
 
-use alloc::string::String;
+use alloc::format;
+use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use noto_sans_mono_bitmap::{FontWeight, RasterHeight};
 
@@ -8,12 +10,14 @@ use super::{App, AppKind, BLINK_MS, Request};
 use crate::gfx::{Canvas, Rect, Rgb, Surface, glyph_width};
 use crate::keyboard::Key;
 use crate::theme::*;
-use crate::time;
+use crate::{fs, time};
 
 const FONT: RasterHeight = RasterHeight::Size16;
 const LINE_H: i32 = 28;
 const RULED: Rgb = Rgb::hex(0xE2E7E6);
-const MAX_CHARS: usize = 8000;
+const MAX_CHARS: usize = 64_000;
+const SAVE_AFTER_MS: u64 = 800;
+const FOLDER: &str = "/Notes";
 
 pub struct Notes {
     text: String,
@@ -21,11 +25,56 @@ pub struct Notes {
     caret_on: bool,
     focused: bool,
     last_blink: u64,
+    path: String,
+    dirty: bool,
+    last_edit: u64,
 }
 
 impl Notes {
-    pub fn new() -> Self {
-        Self { text: String::new(), caret: Rect::default(), caret_on: true, focused: true, last_blink: 0 }
+    /// Opens a file (or starts it, if it doesn't exist yet).
+    pub fn open(path: &str) -> Self {
+        let text = fs::read(path).map(|d| String::from_utf8_lossy(&d).to_string()).unwrap_or_default();
+        Self {
+            text,
+            caret: Rect::default(),
+            caret_on: true,
+            focused: true,
+            last_blink: 0,
+            path: String::from(path),
+            dirty: false,
+            last_edit: 0,
+        }
+    }
+
+    /// The most recently edited note, or a new one if there are none.
+    pub fn latest() -> Self {
+        let latest = fs::list(FOLDER)
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|e| !e.dir)
+            .max_by_key(|e| e.modified)
+            .map(|e| format!("{FOLDER}/{}", e.name));
+        match latest {
+            Some(path) => Self::open(&path),
+            None => Self::blank(),
+        }
+    }
+
+    /// A new, empty note with the next free name.
+    pub fn blank() -> Self {
+        let taken = fs::list(FOLDER).unwrap_or_default();
+        let n = (1..).find(|n| !taken.iter().any(|e| e.name == format!("Note {n}.txt"))).unwrap_or(1);
+        Self::open(&format!("{FOLDER}/Note {n}.txt"))
+    }
+
+    fn save(&mut self) {
+        if !self.dirty {
+            return;
+        }
+        self.dirty = false;
+        if let Err(e) = fs::write(&self.path, self.text.as_bytes()) {
+            crate::log!("notes: could not save {}: {}", self.path, e.text());
+        }
     }
 
     /// The text broken into lines that fit `cols`.
@@ -70,6 +119,19 @@ impl App for Notes {
         (500, 450)
     }
 
+    fn title(&self) -> String {
+        let name = self.path.rsplit('/').next().unwrap_or("");
+        String::from(name.strip_suffix(".txt").unwrap_or(name))
+    }
+
+    fn file(&self) -> Option<&str> {
+        Some(&self.path)
+    }
+
+    fn close(&mut self) {
+        self.save();
+    }
+
     fn draw(&mut self, c: &mut Canvas, area: Rect) {
         c.fill_rgb(area, PAPER);
         let gw = glyph_width(FONT, FontWeight::Regular) as i32;
@@ -107,11 +169,16 @@ impl App for Notes {
             Key::Char(ch) if (ch == '\n' || !ch.is_control()) && self.text.len() < MAX_CHARS => self.text.push(ch),
             _ => return None,
         }
+        self.dirty = true;
+        self.last_edit = time::millis();
         self.draw(c, area);
         Some(area)
     }
 
     fn tick(&mut self, now: u64, c: &mut Canvas, _area: Rect) -> Option<Rect> {
+        if self.dirty && now - self.last_edit >= SAVE_AFTER_MS {
+            self.save();
+        }
         if !self.focused || now - self.last_blink < BLINK_MS {
             return None;
         }

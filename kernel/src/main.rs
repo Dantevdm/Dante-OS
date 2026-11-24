@@ -17,7 +17,9 @@ mod boot_screen;
 mod cpu;
 mod crash;
 mod desktop;
+mod disk;
 mod dock;
+mod fs;
 mod gdt;
 mod gfx;
 mod heap;
@@ -26,6 +28,7 @@ mod keyboard;
 mod launcher;
 mod memory;
 mod mouse;
+mod pci;
 mod power;
 mod screen;
 mod serial;
@@ -109,6 +112,9 @@ extern "C" fn kmain() -> ! {
     mouse::init();
     apic::route_isa_irq(&madt, 12, interrupts::MOUSE_VECTOR);
     x86_64::instructions::interrupts::enable();
+    if disk::init() {
+        fs::init();
+    }
     log!("cpu: interrupts on");
 
     let usable_mib = MEMMAP

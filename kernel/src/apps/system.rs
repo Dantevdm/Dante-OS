@@ -30,7 +30,7 @@ impl App for System {
     }
 
     fn size(&self) -> (i32, i32) {
-        (460, 450)
+        (460, 480)
     }
 
     fn draw(&mut self, c: &mut Canvas, area: Rect) {
@@ -41,11 +41,16 @@ impl App for System {
 
         let (used, total) = memory::stats();
         let (heap_used, heap_free) = heap::stats();
-        let rows: [(&str, String); 6] = [
+        let disk = match crate::fs::usage() {
+            Some((used, total)) => format!("{} of {}", crate::fs::size_text(used), crate::fs::size_text(total)),
+            None => String::from("None"),
+        };
+        let rows: [(&str, String); 7] = [
             ("Processor", self.brand.clone()),
             ("Cores", format!("{}", super::cores())),
             ("Memory", format!("{} of {} MiB", used * 4 / 1024, total * 4 / 1024)),
             ("Kernel heap", format!("{} KiB of {} MiB", heap_used / 1024, (heap_used + heap_free) / (1024 * 1024))),
+            ("Disk", disk),
             ("Display", format!("{} × {}", DISPLAY_W.load(Ordering::Relaxed), DISPLAY_H.load(Ordering::Relaxed))),
             ("Uptime", super::uptime_text()),
         ];

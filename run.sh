@@ -32,6 +32,10 @@ cp "$LIMINE_DIR/BOOTX64.EFI" "$ESP/EFI/BOOT/"
 cp "$ROOT/boot/limine.conf" "$ESP/boot/limine/"
 cp "$KERNEL" "$ESP/boot/dante-kernel"
 
+# A virtual hard disk that keeps its contents between runs.
+DISK="$ROOT/build/disk.img"
+[ -f "$DISK" ] || qemu-img create -q -f raw "$DISK" 64M
+
 QEMU_ARGS=(
     -machine q35,vmport=on
     -rtc base=localtime
@@ -39,6 +43,8 @@ QEMU_ARGS=(
     -smp 4
     -drive "if=pflash,format=raw,readonly=on,file=$FIRMWARE"
     -drive "format=raw,file=fat:rw:$ESP"
+    -drive "if=none,id=disk0,format=raw,file=$DISK"
+    -device virtio-blk-pci,drive=disk0,disable-legacy=off,disable-modern=on
     -serial stdio
     -no-reboot
 )

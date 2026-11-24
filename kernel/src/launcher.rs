@@ -8,7 +8,7 @@ use noto_sans_mono_bitmap::{FontWeight, RasterHeight};
 use crate::apps::AppKind;
 use crate::boot_screen::ease_out;
 use crate::desktop::MARGIN;
-use crate::gfx::{Canvas, Rect, Rgb, Surface};
+use crate::gfx::{Canvas, Rect, Rgb, Surface, text_width};
 use crate::keyboard::{Key, KeyCode};
 use crate::theme::*;
 
@@ -23,6 +23,9 @@ const BIG: f32 = 2.4;
 #[derive(Clone)]
 pub enum Action {
     Open(AppKind),
+    OpenFile(String),
+    OpenFolder(String),
+    NewNote,
     Run(String),
     Reboot,
     Shutdown,
@@ -30,6 +33,8 @@ pub enum Action {
 
 struct Item {
     name: String,
+    /// Shown on the right, muted: the folder a file is in.
+    detail: String,
     action: Action,
 }
 
@@ -83,22 +88,32 @@ impl Launcher {
         if let Some(cmd) = self.query.strip_prefix('>') {
             let cmd = cmd.trim();
             if !cmd.is_empty() {
-                self.items.push(Item { name: cmd.to_string(), action: Action::Run(cmd.to_string()) });
+                self.items.push(Item { name: cmd.to_string(), detail: String::new(), action: Action::Run(cmd.to_string()) });
             }
         } else {
             let mut all: Vec<Item> = AppKind::ALL
                 .iter()
                 .map(|&k| {
                     let name = k.title().to_string();
-                    Item { name, action: Action::Open(k) }
+                    Item { name, detail: String::new(), action: Action::Open(k) }
                 })
                 .collect();
-            all.push(Item { name: "Restart".into(), action: Action::Reboot });
-            all.push(Item { name: "Shut Down".into(), action: Action::Shutdown });
+            all.push(Item { name: "New Note".into(), detail: String::new(), action: Action::NewNote });
+            all.push(Item { name: "Restart".into(), detail: String::new(), action: Action::Reboot });
+            all.push(Item { name: "Shut Down".into(), detail: String::new(), action: Action::Shutdown });
             for (cmd, what) in [("mem", "Memory"), ("cpu", "Processor"), ("uptime", "Uptime")] {
-                all.push(Item { name: what.into(), action: Action::Run(cmd.into()) });
+                all.push(Item { name: what.into(), detail: String::new(), action: Action::Run(cmd.into()) });
             }
             self.items = all.into_iter().filter(|i| q.is_empty() || i.name.to_lowercase().contains(&q)).collect();
+            if !q.is_empty() {
+                let room = self.max_rows().saturating_sub(self.items.len());
+                for (path, dir) in crate::fs::find(&q, room) {
+                    let (folder, name) = path.rsplit_once('/').unwrap_or(("", &path));
+                    let folder = if folder.is_empty() { String::from("/") } else { folder.to_string() };
+                    let action = if dir { Action::OpenFolder(path.clone()) } else { Action::OpenFile(path.clone()) };
+                    self.items.push(Item { name: name.to_string(), detail: folder, action });
+                }
+            }
         }
         self.items.truncate(self.max_rows());
         self.sel = self.sel.min(self.items.len().saturating_sub(1));
@@ -202,6 +217,10 @@ impl Launcher {
             c.text(MARGIN as usize, (ry + 14) as usize, &item.name, RasterHeight::Size32, weight, colour, 0, 1.0);
             if sel {
                 c.disc((w - MARGIN - 6) as f32, (ry + 31) as f32, 4.5, SEA);
+            }
+            if !item.detail.is_empty() {
+                let dw = text_width(&item.detail, f, FontWeight::Regular, 0) as i32;
+                c.text((w - MARGIN - 34 - dw) as usize, (ry + 23) as usize, &item.detail, f, FontWeight::Regular, MUTED, 0, 1.0);
             }
             c.fill_rgb(Rect::new(MARGIN, ry + ROW_H - 1, w - 2 * MARGIN, 1), ROW_LINE);
         }

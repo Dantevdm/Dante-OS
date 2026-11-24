@@ -9,11 +9,10 @@ use super::{App, AppKind, BLINK_MS, Request};
 use crate::gfx::{Canvas, Rect, Rgb, Surface, glyph_width};
 use crate::keyboard::{Key, KeyCode};
 use crate::theme::*;
-use crate::{heap, memory, time, VERSION};
+use crate::{fs, heap, memory, time, VERSION};
 
 const FONT: RasterHeight = RasterHeight::Size16;
 const LINE_H: i32 = 22;
-const PROMPT: &str = "~ ";
 const MAX_LINES: usize = 500;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -40,6 +39,7 @@ pub struct Terminal {
     input: String,
     history: Vec<String>,
     history_pos: usize,
+    cwd: String,
     cols: usize,
     caret_on: bool,
     focused: bool,
@@ -53,6 +53,7 @@ impl Terminal {
             input: String::new(),
             history: Vec::new(),
             history_pos: 0,
+            cwd: String::from("/"),
             cols: 72,
             caret_on: true,
             focused: true,
@@ -97,7 +98,7 @@ impl Terminal {
         let r = Self::row_rect(area, self.visible(area).len());
         c.fill_rgb(r, PAPER);
         let y = (r.y + 3) as usize;
-        let end = c.text(r.x as usize, y, PROMPT, FONT, FontWeight::Regular, SEA, 0, 1.0);
+        let end = c.text(r.x as usize, y, &self.prompt(), FONT, FontWeight::Regular, SEA, 0, 1.0);
         let end = c.text(end, y, &self.input, FONT, FontWeight::Regular, INK, 0, 1.0);
         if self.caret_on && self.focused {
             c.fill_rgb(Rect::new(end as i32 + 1, y as i32, 2, 17), SEA);
@@ -105,12 +106,48 @@ impl Terminal {
         r
     }
 
+    fn prompt(&self) -> String {
+        format!("{} $ ", self.cwd)
+    }
+
+    fn path(&self, p: &str) -> String {
+        fs::resolve(&self.cwd, p)
+    }
+
+    fn fail(&mut self, cmd: &str, what: &str, e: fs::Error) {
+        self.say(&format!("  {cmd}: {what}: {}", e.text()), Kind::Error);
+    }
+
     fn exec(&mut self, line: &str, out: &mut Vec<Request>) {
+        // "echo text > file" and "echo text >> file"
+        if let Some(rest) = line.strip_prefix("echo ") {
+            if let Some((text, target)) = rest.split_once('>') {
+                let append = target.starts_with('>');
+                let target = target.trim_start_matches('>').trim();
+                let path = self.path(target);
+                let mut data = if append { fs::read(&path).unwrap_or_default() } else { Vec::new() };
+                data.extend_from_slice(text.trim().as_bytes());
+                data.push(b'\n');
+                if let Err(e) = fs::write(&path, &data) {
+                    self.fail("echo", target, e);
+                }
+                return;
+            }
+        }
         let (cmd, rest) = line.split_once(' ').map(|(c, r)| (c, r.trim())).unwrap_or((line, ""));
         match cmd {
             "help" => {
                 for (name, what) in [
-                    ("open <app>", "open an app"),
+                    ("open <name>", "open an app, file or folder"),
+                    ("ls [dir]", "list a directory"),
+                    ("cd <dir>", "change directory"),
+                    ("pwd", "print working directory"),
+                    ("cat <file>", "print a file"),
+                    ("mkdir <dir>", "make a directory"),
+                    ("touch <file>", "create an empty file"),
+                    ("rm <path>", "remove a file or empty directory"),
+                    ("mv <from> <to>", "move or rename"),
+                    ("df", "disk usage"),
                     ("about", "version information"),
                     ("mem", "memory usage"),
                     ("cpu", "processor information"),
@@ -123,7 +160,7 @@ impl Terminal {
                     ("reboot", "restart"),
                     ("shutdown", "shut down"),
                 ] {
-                    self.say(&format!("  {name:<13}{what}"), Kind::Output);
+                    self.say(&format!("  {name:<16}{what}"), Kind::Output);
                 }
             }
             "about" | "version" => {
@@ -137,9 +174,84 @@ impl Terminal {
             }
             "open" => match AppKind::from_name(rest) {
                 Some(k) => out.push(Request::Open(k)),
-                None => self.say("  usage: open terminal|notes|clock|system", Kind::Error),
+                None if rest.is_empty() => self.say("  usage: open <app|file|folder>", Kind::Error),
+                None => {
+                    let path = self.path(rest);
+                    match fs::stat(&path) {
+                        Ok(e) if e.dir => out.push(Request::OpenFolder(path)),
+                        Ok(_) => out.push(Request::OpenFile(path)),
+                        Err(e) => self.fail("open", rest, e),
+                    }
+                }
             },
-            "notes" | "clock" | "system" => out.push(Request::Open(AppKind::from_name(cmd).unwrap())),
+            "ls" => {
+                let path = self.path(rest);
+                match fs::list(&path) {
+                    Ok(entries) => {
+                        for e in entries {
+                            let size = if e.dir { String::new() } else { fs::size_text(e.size as u64) };
+                            let when = time::DateTime::from_timestamp(e.modified).short_text();
+                            let name = if e.dir { format!("{}/", e.name) } else { e.name };
+                            self.say(&format!("  {name:<28}{size:>10}  {when}"), if name.ends_with('/') { Kind::Accent } else { Kind::Output });
+                        }
+                    }
+                    Err(e) => self.fail("ls", rest, e),
+                }
+            }
+            "cd" => {
+                let path = self.path(if rest.is_empty() { "/" } else { rest });
+                match fs::stat(&path) {
+                    Ok(e) if e.dir => self.cwd = path,
+                    Ok(_) => self.fail("cd", rest, fs::Error::NotDir),
+                    Err(e) => self.fail("cd", rest, e),
+                }
+            }
+            "pwd" => {
+                let cwd = self.cwd.clone();
+                self.say(&format!("  {cwd}"), Kind::Output);
+            }
+            "cat" => match fs::read(&self.path(rest)) {
+                Ok(data) => {
+                    let text = String::from_utf8_lossy(&data).to_string();
+                    for l in text.trim_end_matches('\n').split('\n') {
+                        self.say(l, Kind::Output);
+                    }
+                }
+                Err(e) => self.fail("cat", rest, e),
+            },
+            "mkdir" => {
+                if let Err(e) = fs::mkdir(&self.path(rest)) {
+                    self.fail("mkdir", rest, e);
+                }
+            }
+            "touch" => {
+                let path = self.path(rest);
+                if fs::stat(&path).is_err() {
+                    if let Err(e) = fs::write(&path, &[]) {
+                        self.fail("touch", rest, e);
+                    }
+                }
+            }
+            "rm" => {
+                if let Err(e) = fs::remove(&self.path(rest)) {
+                    self.fail("rm", rest, e);
+                }
+            }
+            "mv" => match rest.split_once(' ') {
+                Some((a, b)) => {
+                    if let Err(e) = fs::rename(&self.path(a), &self.path(b.trim())) {
+                        self.fail("mv", a, e);
+                    }
+                }
+                None => self.say("  usage: mv <from> <to>", Kind::Error),
+            },
+            "df" => match fs::usage() {
+                Some((used, total)) => {
+                    self.say(&format!("  {} used of {}", fs::size_text(used), fs::size_text(total)), Kind::Output)
+                }
+                None => self.say("  df: no disk", Kind::Error),
+            },
+            "files" | "notes" | "clock" | "system" => out.push(Request::Open(AppKind::from_name(cmd).unwrap())),
             "mem" => {
                 let (heap_used, heap_free) = heap::stats();
                 let (used, total) = memory::stats();
@@ -202,7 +314,7 @@ impl App for Terminal {
             }
             Key::Char('\u{1b}') => self.input.clear(),
             Key::Char(ch) if !ch.is_control() => {
-                if PROMPT.len() + self.input.chars().count() + 1 < self.cols {
+                if self.prompt().chars().count() + self.input.chars().count() + 1 < self.cols {
                     self.input.push(ch);
                 }
             }
@@ -220,7 +332,8 @@ impl App for Terminal {
     }
 
     fn run(&mut self, cmd: &str, c: &mut Canvas, area: Rect, out: &mut Vec<Request>) -> Option<Rect> {
-        self.say(&format!("{PROMPT}{cmd}"), Kind::Input);
+        let prompt = self.prompt();
+        self.say(&format!("{prompt}{cmd}"), Kind::Input);
         let cmd = cmd.to_string();
         if !cmd.is_empty() {
             if self.history.last() != Some(&cmd) {

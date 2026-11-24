@@ -22,10 +22,15 @@ cp "$ROOT/tools/limine/BOOTX64.EFI" "$ESP/EFI/BOOT/"
 cp "$ROOT/boot/limine.conf" "$ESP/boot/limine/"
 cp "$ROOT/kernel/target/x86_64-unknown-none/release/dante-kernel" "$ESP/boot/dante-kernel"
 rm -f "$LOG" "$SOCK"
+# A fresh disk each run, unless KEEP_DISK=1 (to test that files survive a reboot).
+DISK="$ROOT/build/test-disk.img"
+[ "${KEEP_DISK:-0}" = 1 ] && [ -f "$DISK" ] || { rm -f "$DISK"; qemu-img create -q -f raw "$DISK" 64M; }
 
 qemu-system-x86_64 -machine q35,vmport=on -rtc base=localtime -m 2G -smp 4 \
     -drive "if=pflash,format=raw,readonly=on,file=$FW" \
     -drive "format=raw,file=fat:rw:$ESP" \
+    -drive "if=none,id=disk0,format=raw,file=$DISK" \
+    -device virtio-blk-pci,drive=disk0,disable-legacy=off,disable-modern=on \
     -serial "file:$LOG" -display none -no-reboot \
     -qmp "unix:$SOCK,server,nowait" &
 QPID=$!

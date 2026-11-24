@@ -91,3 +91,43 @@ impl DateTime {
         alloc::format!("{} {} {month} {}", DAYS[self.weekday()], self.day, self.year)
     }
 }
+
+/// Days since 1970-01-01 for a civil date (Howard Hinnant's algorithm).
+fn days_from_civil(y: i64, m: i64, d: i64) -> i64 {
+    let y = if m <= 2 { y - 1 } else { y };
+    let era = y.div_euclid(400);
+    let yoe = y - era * 400;
+    let mp = (m + 9) % 12;
+    let doy = (153 * mp + 2) / 5 + d - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    era * 146_097 + doe - 719_468
+}
+
+impl DateTime {
+    /// Seconds since 1970 (in the machine's local time).
+    pub fn timestamp(&self) -> u64 {
+        let days = days_from_civil(self.year as i64, self.month as i64, self.day as i64);
+        (days * 86_400 + self.hour as i64 * 3600 + self.minute as i64 * 60 + self.second as i64).max(0) as u64
+    }
+
+    pub fn from_timestamp(t: u64) -> DateTime {
+        let days = (t / 86_400) as i64;
+        let rem = t % 86_400;
+        let z = days + 719_468;
+        let era = z.div_euclid(146_097);
+        let doe = z - era * 146_097;
+        let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+        let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+        let mp = (5 * doy + 2) / 153;
+        let day = (doy - (153 * mp + 2) / 5 + 1) as u8;
+        let month = if mp < 10 { mp + 3 } else { mp - 9 } as u8;
+        let year = (yoe + era * 400 + if month <= 2 { 1 } else { 0 }) as u16;
+        DateTime { year, month, day, hour: (rem / 3600) as u8, minute: (rem / 60 % 60) as u8, second: (rem % 60) as u8 }
+    }
+
+    /// "24 Nov 08:46"
+    pub fn short_text(&self) -> alloc::string::String {
+        let month = MONTHS.get(self.month.saturating_sub(1) as usize).unwrap_or(&"?");
+        alloc::format!("{} {month} {:02}:{:02}", self.day, self.hour, self.minute)
+    }
+}

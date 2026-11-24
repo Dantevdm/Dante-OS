@@ -170,6 +170,13 @@ fn draw_icon(c: &mut Canvas, item: Item, x: i32, y: i32) {
     let tile = Rect::new(x, y, ICON, ICON);
     let (cx, cy) = (x as f32 + ICON as f32 / 2.0, y as f32 + ICON as f32 / 2.0);
     match item {
+        Item::App(AppKind::Files) => {
+            c.panel(tile, 11.0, TILE, 1.0, Some(HAIRLINE), 0.0);
+            let folder = Rgb::hex(0x8FB3BD);
+            c.panel(Rect::new(x + 9, y + 12, 12, 6), 2.5, folder, 1.0, None, 0.0);
+            c.panel(Rect::new(x + 9, y + 15, 26, 18), 3.5, folder, 1.0, None, 0.0);
+            c.panel(Rect::new(x + 9, y + 18, 26, 15), 3.5, SEA, 1.0, None, 0.0);
+        }
         Item::App(AppKind::Terminal) => {
             c.panel(tile, 11.0, INK, 1.0, None, 0.0);
             let (x0, y0) = (x as f32 + 13.0, y as f32 + 15.0);

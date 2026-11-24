@@ -89,6 +89,24 @@ impl Frames {
         self.used -= 1;
     }
 
+    /// `n` physically contiguous frames (for devices that read memory directly).
+    pub fn alloc_contiguous(&mut self, n: u64) -> Option<u64> {
+        while self.region < self.count {
+            let (_, end) = self.regions[self.region];
+            if self.next + n * PAGE <= end {
+                let start = self.next;
+                self.next += n * PAGE;
+                self.used += n;
+                return Some(start);
+            }
+            self.region += 1;
+            if self.region < self.count {
+                self.next = self.regions[self.region].0;
+            }
+        }
+        None
+    }
+
     /// Allocate a frame and fill it with zeros.
     pub fn alloc_zeroed(&mut self) -> Option<u64> {
         let f = self.alloc()?;
@@ -164,4 +182,12 @@ pub fn map_mmio(phys: u64, size: u64) -> VirtAddr {
 
 pub fn stats() -> (u64, u64) {
     FRAMES.lock().as_ref().map(|f| (f.used, f.total)).unwrap_or((0, 0))
+}
+
+/// Zeroed, physically contiguous memory for a device. Returns (physical, virtual).
+pub fn dma_alloc(pages: u64) -> Option<(u64, *mut u8)> {
+    let phys = FRAMES.lock().as_mut()?.alloc_contiguous(pages)?;
+    let virt = phys_to_virt(phys).as_mut_ptr::<u8>();
+    unsafe { core::ptr::write_bytes(virt, 0, (pages * PAGE) as usize) };
+    Some((phys, virt))
 }

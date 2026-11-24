@@ -5,7 +5,7 @@
 
 Actions:
     h, ret, spc, ctrl-spc ...   a key (QEMU sendkey names)
-    type:hello                  type text (letters, digits, space)
+    type:hello                  type text (letters, digits, space, - . > /)
     move:X,Y                    move the pointer to screen pixel X,Y
     down / up / click           left mouse button
     drag:X1,Y1,X2,Y2            press at one point, move in steps, release at the other
@@ -94,7 +94,7 @@ def main():
             continue
         elif a.startswith("type:"):
             for ch in a[5:]:
-                q.hmp("sendkey " + KEYS.get(ch, ch))
+                q.hmp("sendkey " + ("shift-" + ch.lower() if ch.isupper() else KEYS.get(ch, ch)))
                 time.sleep(0.08)
         else:
             q.hmp("sendkey " + a)
