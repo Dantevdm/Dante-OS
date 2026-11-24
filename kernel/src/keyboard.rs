@@ -1,7 +1,7 @@
 //! PS/2 keyboard. The interrupt handler only queues raw scancodes; decoding
 //! into characters happens outside the interrupt, in `next_key`.
 
-use core::sync::atomic::{AtomicUsize, Ordering};
+use core::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use pc_keyboard::{DecodedKey, HandleControl, PS2Keyboard, ScancodeSet1, layouts::Us104Key};
 use spin::Mutex;
 
@@ -36,9 +36,17 @@ fn pop_scancode() -> Option<u8> {
 static DECODER: Mutex<PS2Keyboard<Us104Key, ScancodeSet1>> =
     Mutex::new(PS2Keyboard::new(ScancodeSet1::new(), Us104Key, HandleControl::Ignore));
 
+#[derive(Clone, Copy)]
 pub enum Key {
     Char(char),
     Raw(KeyCode),
+}
+
+static CTRL: AtomicBool = AtomicBool::new(false);
+
+/// Whether Ctrl was held for the key most recently returned by `next_key`.
+pub fn ctrl() -> bool {
+    CTRL.load(Ordering::Relaxed)
 }
 
 /// The next decoded key press, if any.
@@ -46,7 +54,10 @@ pub fn next_key() -> Option<Key> {
     let mut kb = DECODER.lock();
     while let Some(code) = pop_scancode() {
         if let Ok(Some(event)) = kb.add_byte(code) {
-            match kb.process_keyevent(event) {
+            let decoded = kb.process_keyevent(event);
+            let m = kb.get_modifiers();
+            CTRL.store(m.lctrl || m.rctrl, Ordering::Relaxed);
+            match decoded {
                 Some(DecodedKey::Unicode(c)) => return Some(Key::Char(c)),
                 Some(DecodedKey::RawKey(k)) => return Some(Key::Raw(k)),
                 None => {}

@@ -12,7 +12,7 @@ bench = false
 libm = "0.2.16"
 limine = "0.6"
 linked_list_allocator = "0.10.6"
-noto-sans-mono-bitmap = { version = "0.4.0", default-features = false, features = ["size_16", "size_32", "regular", "bold", "unicode-basic-latin", "unicode-latin-1-supplement"] }
+noto-sans-mono-bitmap = { version = "0.4.0", default-features = false, features = ["size_16", "size_20", "size_24", "size_32", "light", "regular", "bold", "unicode-basic-latin", "unicode-latin-1-supplement"] }
 pc-keyboard = "0.9.0"
 pic8259 = "0.11.0"
 spin = "0.12.3"

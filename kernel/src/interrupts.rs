@@ -5,10 +5,11 @@ use x86_64::instructions::port::Port;
 use x86_64::registers::control::Cr2;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
 
-use crate::{apic, crash, gdt, keyboard, time};
+use crate::{apic, crash, gdt, keyboard, mouse, time};
 
 pub const TIMER_VECTOR: u8 = 0x30;
 pub const KEYBOARD_VECTOR: u8 = 0x31;
+pub const MOUSE_VECTOR: u8 = 0x32;
 
 static IDT: Lazy<InterruptDescriptorTable> = Lazy::new(|| {
     let mut idt = InterruptDescriptorTable::new();
@@ -22,6 +23,7 @@ static IDT: Lazy<InterruptDescriptorTable> = Lazy::new(|| {
     }
     idt[TIMER_VECTOR].set_handler_fn(timer);
     idt[KEYBOARD_VECTOR].set_handler_fn(keyboard_irq);
+    idt[MOUSE_VECTOR].set_handler_fn(mouse_irq);
     idt[apic::SPURIOUS_VECTOR].set_handler_fn(spurious);
     idt
 });
@@ -70,6 +72,11 @@ extern "x86-interrupt" fn timer(_frame: InterruptStackFrame) {
 extern "x86-interrupt" fn keyboard_irq(_frame: InterruptStackFrame) {
     let scancode: u8 = unsafe { Port::new(0x60).read() };
     keyboard::push_scancode(scancode);
+    apic::eoi();
+}
+
+extern "x86-interrupt" fn mouse_irq(_frame: InterruptStackFrame) {
+    mouse::on_irq();
     apic::eoi();
 }
 

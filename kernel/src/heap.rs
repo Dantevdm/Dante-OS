@@ -4,7 +4,7 @@ use linked_list_allocator::LockedHeap;
 
 /// Where the heap lives in virtual memory: well away from the HHDM and the kernel.
 pub const HEAP_START: u64 = 0xFFFF_A000_0000_0000;
-pub const HEAP_SIZE: u64 = 16 * 1024 * 1024;
+pub const HEAP_SIZE: u64 = 64 * 1024 * 1024;
 
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();

@@ -72,3 +72,22 @@ pub fn now() -> DateTime {
         year: 2000 + conv(a[5]) as u16,
     }
 }
+
+const MONTHS: [&str; 12] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAYS: [&str; 7] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+impl DateTime {
+    /// Day of the week, 0 = Sunday (Sakamoto's method).
+    pub fn weekday(&self) -> usize {
+        const T: [u16; 12] = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+        let m = self.month.clamp(1, 12) as usize;
+        let y = if m < 3 { self.year - 1 } else { self.year } as usize;
+        (y + y / 4 - y / 100 + y / 400 + T[m - 1] as usize + self.day as usize) % 7
+    }
+
+    /// "Monday 23 Nov 2026"
+    pub fn date_text(&self) -> alloc::string::String {
+        let month = MONTHS.get(self.month.saturating_sub(1) as usize).unwrap_or(&"?");
+        alloc::format!("{} {} {month} {}", DAYS[self.weekday()], self.day, self.year)
+    }
+}

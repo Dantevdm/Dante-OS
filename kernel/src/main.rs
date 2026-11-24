@@ -11,19 +11,25 @@ extern crate alloc;
 
 mod acpi;
 mod apic;
+mod apps;
 mod boot_screen;
+mod cpu;
 mod crash;
 mod desktop;
 mod gdt;
+mod gfx;
 mod heap;
 mod interrupts;
 mod keyboard;
+mod launcher;
 mod memory;
+mod mouse;
+mod power;
 mod screen;
 mod serial;
-mod shell;
 mod theme;
 mod time;
+mod wm;
 
 use limine::memmap::MEMMAP_USABLE;
 use limine::request::{FramebufferRequest, HhdmRequest, MemmapRequest, MpRequest, RsdpRequest};
@@ -31,6 +37,7 @@ use limine::{BaseRevision, RequestsEndMarker, RequestsStartMarker};
 use spin::Mutex;
 
 use boot_screen::BootScreen;
+use core::sync::atomic::Ordering;
 use screen::Screen;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -97,6 +104,8 @@ extern "C" fn kmain() -> ! {
     apic::init_local(interrupts::TIMER_VECTOR, time::HZ as u32);
     apic::init_io(&madt);
     apic::route_isa_irq(&madt, 1, interrupts::KEYBOARD_VECTOR);
+    mouse::init();
+    apic::route_isa_irq(&madt, 12, interrupts::MOUSE_VECTOR);
     x86_64::instructions::interrupts::enable();
     log!("cpu: interrupts on");
 
@@ -135,15 +144,15 @@ extern "C" fn kmain() -> ! {
         boot.ready(s);
     }
     log!("Dante kernel ready");
-    time::sleep_ms(500);
+    apps::CORES.store(cores, Ordering::Relaxed);
+    apps::DISPLAY_W.store(fb.width as usize, Ordering::Relaxed);
+    apps::DISPLAY_H.store(fb.height as usize, Ordering::Relaxed);
+    time::sleep_ms(400);
 
-    let mut shell = {
-        let guard = SCREEN.lock();
-        shell::Shell::new(guard.as_ref().unwrap(), 0)
-    };
-    shell.show();
-    log!("shell: ready");
-    shell.run();
+    let mut wm = wm::Wm::new(time::millis());
+    wm.open(apps::AppKind::Terminal, time::millis());
+    log!("desktop: ready");
+    wm.run();
 }
 
 pub fn halt() -> ! {

@@ -15,31 +15,42 @@ You need [Rust](https://rustup.rs) and QEMU (`brew install qemu`). The right nig
 
 The first run downloads the prebuilt Limine bootloader into `tools/limine`.
 
-At the shell, type `help`. The commands are `about`, `mem`, `cpu`, `uptime`, `time`, `echo`, `clear`, `crash`, `reboot` and `shutdown`. The up and down arrows step through history, and Esc clears the line.
+### Using it
+
+- **Mouse:** in QEMU the pointer follows your Mac's mouse directly, with no need to click into the window to capture it.
+- **Windows:** drag a window by its title bar, click a window to bring it forward, and close it with the circle at the top right (it turns into a ×). Ctrl+W closes the focused window.
+- **Launcher:** press Ctrl+Space, click DANTE or "type anything", or just start typing on the empty desktop. Type to search, Enter to open, 1-9 to jump, Esc to close. Start with `>` to run a terminal command.
+- **Apps:** terminal, notes, clock and system.
+- **Terminal:** type `help`. Up and down arrows step through history, and Esc clears the line.
 
 ### Automated test
 
 ```bash
-tools/qemu-test.sh "shell: ready" /tmp/shot.png 90 h e l p ret
+tools/qemu-test.sh "desktop: ready" /tmp/shot.png 90 type:help ret drag:300,100,600,200
 ```
 
-This boots the OS with no window, waits for the given log line, types the keys, saves a screenshot and prints the kernel log.
+This boots the OS with no window and waits for the given log line. Then it types, moves and clicks the mouse (see `tools/qemu-drive.py` for the actions), saves a screenshot and prints the kernel log.
 
 ## What's inside
 
 ```
 boot/limine.conf        bootloader config
 kernel/src/
-  main.rs               boot sequence: CPU → memory → interrupts → screen → shell
-  gdt.rs, interrupts.rs CPU tables, exception handlers, the timer and keyboard interrupts
-  memory.rs, heap.rs    physical frame allocator, page tables, a 16 MiB kernel heap
+  main.rs               boot sequence: CPU → memory → interrupts → screen → desktop
+  gdt.rs, interrupts.rs CPU tables, exception handlers, timer, keyboard and mouse interrupts
+  memory.rs, heap.rs    physical frame allocator, page tables, a 64 MiB kernel heap
   acpi.rs, apic.rs      ACPI MADT parsing, Local APIC timer (1000 Hz), I/O APIC routing
   keyboard.rs           PS/2 keyboard: lock-free queue filled by the interrupt, decoded outside it
+  mouse.rs              PS/2 mouse, plus QEMU/VMware's absolute pointer
   time.rs               uptime ticks and the CMOS real-time clock
-  screen.rs             framebuffer drawing: gradients, anti-aliased lines and discs, text
+  gfx.rs                drawing: anti-aliased shapes, text, off-screen canvases
+  screen.rs             the framebuffer
   theme.rs              the First Light palette
   boot_screen.rs        the gear, the wordmark and the ruler progress bar
-  desktop.rs, shell.rs  the desktop (sea, sun, header) and the terminal window
+  desktop.rs            the wallpaper: sea, breathing sun, drifting waves, a passing plane
+  wm.rs                 window manager and compositor (redraws only what changed)
+  launcher.rs           search for apps and commands
+  apps/                 terminal, notes, clock, system
   crash.rs              a calm crash page instead of a frozen screen
 Design/                 the design canvas (all rounds, including First Light)
 tools/qemu-test.sh      headless boot + keystrokes + screenshot
@@ -52,5 +63,5 @@ tools/qemu-test.sh      headless boot + keystrokes + screenshot
 3. **User space**: ring 3, system calls, and loading ELF programs.
 4. **Storage**: a virtio-blk or NVMe driver and a simple filesystem.
 5. **Real power-off**: ACPI shutdown and reboot, read from the FADT and DSDT.
-6. **Input and graphics**: mouse, double-buffered compositing, more than one window.
+6. **Desktop**: resizing windows, workspaces, saving notes once there's a disk.
 7. **Windows apps**: a PE loader and a Win32 compatibility layer, the same idea as Wine, running natively on Dante.

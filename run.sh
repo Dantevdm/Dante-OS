@@ -33,7 +33,8 @@ cp "$ROOT/boot/limine.conf" "$ESP/boot/limine/"
 cp "$KERNEL" "$ESP/boot/dante-kernel"
 
 QEMU_ARGS=(
-    -machine q35
+    -machine q35,vmport=on
+    -rtc base=localtime
     -m 2G
     -smp 4
     -drive "if=pflash,format=raw,readonly=on,file=$FIRMWARE"

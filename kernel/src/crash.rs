@@ -5,6 +5,7 @@ use core::fmt::Write;
 use noto_sans_mono_bitmap::{FontWeight, RasterHeight};
 
 use crate::screen::Buf;
+use crate::gfx::Surface;
 use crate::theme::*;
 
 pub fn stop(what: &str, details: &[(&str, u64)]) -> ! {

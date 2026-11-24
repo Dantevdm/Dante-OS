@@ -7,6 +7,7 @@ use core::fmt::Write;
 use noto_sans_mono_bitmap::{FontWeight, RasterHeight};
 
 use crate::screen::{Buf, Screen};
+use crate::gfx::Surface;
 use crate::theme::*;
 
 const GEAR_SIZE: f32 = 132.0; // px, matching the design
