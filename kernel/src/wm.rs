@@ -689,6 +689,7 @@ impl Wm {
                 self.dirty.push(win.to_screen(r, now));
             }
         }
+        crate::process::reap();
         self.refresh_titles(now);
         if self.dock.tick() {
             self.dirty.push(self.dock.rect());
@@ -796,7 +797,7 @@ impl Wm {
             if !self.dirty.is_empty() {
                 self.flush(now);
             }
-            x86_64::instructions::hlt();
+            crate::sched::idle();
         }
     }
 }

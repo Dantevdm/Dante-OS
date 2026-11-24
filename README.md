@@ -28,6 +28,37 @@ The OS keeps its files on a 64 MiB virtual disk, `build/disk.img`, made on the f
 - **Files:** double-click or press Enter to open, Backspace to go up a folder, Delete to remove.
 - **Notes:** each note is a text file in `/Notes`. It saves itself shortly after you stop typing, and again when you close it.
 - **Terminal:** type `help`. Up and down arrows step through history, and Esc clears the line. File commands: `ls`, `cd`, `pwd`, `cat`, `mkdir`, `touch`, `rm`, `mv`, `df`, `open`, and `echo text > file` (`>>` appends).
+- **Programs:** type a program's name to run it. They live in `/Programs`:
+  - `sort`, `wc` and `cp` work on files, for example `sort notes.txt` or `cp notes.txt Documents`.
+  - `rev` and `guess` read what you type: Enter sends a line, and Ctrl+D ends the input.
+  - `hello`, `count 5`, `spin` and `fault` are small tests.
+
+  Ctrl+C stops the one that is running, `ps` lists running programs, and `kill <pid>` stops one. Each program runs in user mode with its own memory, so a program that crashes stops on its own and the rest of the system carries on.
+
+### Writing a program
+
+Programs are small Rust files in `user/src/bin/`. The kernel build compiles them and copies them to `/Programs` at startup, so a new file there is a new command.
+
+```rust
+#![no_std]
+#![no_main]
+
+dante::main!(main);
+
+fn main(args: &str) {
+    dante::println!("Hello, {args}");
+}
+```
+
+The `dante` library (in `user/src/`) gives programs:
+
+- `print!` and `println!`
+- `io::read_line()` and `io::read_all()` for typed input
+- `fs::read`, `fs::read_to_string`, `fs::write`, `fs::list`, `fs::mkdir`, `fs::remove` and `fs::File`
+- `sleep`, `millis` and `exit`
+- `Vec`, `String` and the rest of `alloc`
+
+Paths are relative to the terminal's current folder. The system calls behind these are listed at the top of `kernel/src/process.rs`.
 
 ### Automated test
 
@@ -44,11 +75,14 @@ boot/limine.conf        bootloader config
 kernel/src/
   main.rs               boot sequence: CPU → memory → interrupts → screen → desktop
   gdt.rs, interrupts.rs CPU tables, exception handlers, timer, keyboard and mouse interrupts
-  memory.rs, heap.rs    physical frame allocator, page tables, a 64 MiB kernel heap
+  memory.rs, heap.rs    physical frame allocator, page tables, address spaces, a 64 MiB kernel heap
   acpi.rs, apic.rs      ACPI MADT parsing, Local APIC timer (1000 Hz), I/O APIC routing
   pci.rs                PCI bus scan and device setup
   disk.rs               virtio block driver
   fs.rs                 DanteFS: blocks, inodes, folders, files
+  sched.rs              scheduler: takes turns between the desktop and programs every 1 ms
+  process.rs            loading programs, system calls, output, crashes
+  programs.rs           installs the built-in programs into /Programs
   keyboard.rs           PS/2 keyboard: lock-free queue filled by the interrupt, decoded outside it
   mouse.rs              PS/2 mouse, plus QEMU/VMware's absolute pointer
   time.rs               uptime ticks and the CMOS real-time clock
@@ -62,6 +96,8 @@ kernel/src/
   launcher.rs           search for apps and commands
   apps/                 files, terminal, notes, clock, system
   crash.rs              a calm crash page instead of a frozen screen
+kernel/build.rs         builds the programs in user/ along with the kernel
+user/                   programs and the dante library they use
 Design/                 the design canvas (all rounds, including First Light)
 tools/qemu-test.sh      headless boot + keystrokes + screenshot
 ```
@@ -69,8 +105,8 @@ tools/qemu-test.sh      headless boot + keystrokes + screenshot
 ## Roadmap
 
 1. **All cores**: start the other CPUs (SMP) and give each one its own scheduler queue.
-2. **Tasks**: kernel threads, then preemptive scheduling on the APIC timer.
-3. **User space**: ring 3, system calls, and loading ELF programs.
+2. **Shell features**: pipes (`sort notes.txt | wc`) and sending output to a file (`> out.txt`).
+3. **Linux compatibility**: answer Linux's system calls so programs built for Linux run unchanged. This is the path to running existing tools, and eventually Homebrew.
 4. **More storage**: an NVMe driver, and a FAT driver to read USB sticks.
 5. **Real power-off**: ACPI shutdown and reboot, read from the FADT and DSDT.
 6. **Desktop**: resizing windows, workspaces.

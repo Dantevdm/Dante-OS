@@ -9,7 +9,8 @@ use super::{App, AppKind, BLINK_MS, Request};
 use crate::gfx::{Canvas, Rect, Rgb, Surface, glyph_width};
 use crate::keyboard::{Key, KeyCode};
 use crate::theme::*;
-use crate::{fs, heap, memory, time, VERSION};
+use crate::process::{self, Status};
+use crate::{fs, heap, keyboard, memory, programs, time, VERSION};
 
 const FONT: RasterHeight = RasterHeight::Size16;
 const LINE_H: i32 = 22;
@@ -44,6 +45,10 @@ pub struct Terminal {
     caret_on: bool,
     focused: bool,
     last_blink: u64,
+    /// The program running in the foreground: (pid, name).
+    job: Option<(u32, String)>,
+    /// Program output that hasn't ended its line yet.
+    partial: String,
 }
 
 impl Terminal {
@@ -58,6 +63,8 @@ impl Terminal {
             caret_on: true,
             focused: true,
             last_blink: 0,
+            job: None,
+            partial: String::new(),
         };
         t.say(&format!("Dante OS {VERSION}"), Kind::Output);
         t.say("", Kind::Output);
@@ -98,7 +105,9 @@ impl Terminal {
         let r = Self::row_rect(area, self.visible(area).len());
         c.fill_rgb(r, PAPER);
         let y = (r.y + 3) as usize;
-        let end = c.text(r.x as usize, y, &self.prompt(), FONT, FontWeight::Regular, SEA, 0, 1.0);
+        // While a program runs, its unfinished line (often a question) comes first.
+        let (lead, colour) = if self.job.is_some() { (self.partial.clone(), MUTED) } else { (self.prompt(), SEA) };
+        let end = c.text(r.x as usize, y, &lead, FONT, FontWeight::Regular, colour, 0, 1.0);
         let end = c.text(end, y, &self.input, FONT, FontWeight::Regular, INK, 0, 1.0);
         if self.caret_on && self.focused {
             c.fill_rgb(Rect::new(end as i32 + 1, y as i32, 2, 17), SEA);
@@ -112,6 +121,49 @@ impl Terminal {
 
     fn path(&self, p: &str) -> String {
         fs::resolve(&self.cwd, p)
+    }
+
+    /// The program a command names: a name in /Programs, or a path.
+    fn program(&self, cmd: &str) -> Option<String> {
+        let path = if cmd.contains('/') { self.path(cmd) } else { format!("{}/{cmd}", programs::DIR) };
+        matches!(fs::stat(&path), Ok(e) if !e.dir).then_some(path)
+    }
+
+    /// The start of the input line: the prompt, or a program's unfinished line.
+    fn lead(&self) -> String {
+        if self.job.is_some() { self.partial.clone() } else { self.prompt() }
+    }
+
+    /// Collect output from the running program. True if anything changed.
+    fn pump(&mut self) -> bool {
+        let Some((pid, name)) = self.job.clone() else { return false };
+        let Some((output, status)) = process::poll(pid) else {
+            self.job = None;
+            return true;
+        };
+        let mut changed = false;
+        if !output.is_empty() {
+            self.partial.push_str(&String::from_utf8_lossy(&output));
+            while let Some(i) = self.partial.find('\n') {
+                let line: String = self.partial.drain(..=i).collect();
+                self.say(line.trim_end_matches('\n'), Kind::Output);
+            }
+            changed = true;
+        }
+        if let Some(status) = status {
+            let rest = core::mem::take(&mut self.partial);
+            if !rest.is_empty() {
+                self.say(&rest, Kind::Output);
+            }
+            match status {
+                Status::Exited(0) | Status::Killed => {}
+                Status::Exited(code) => self.say(&format!("  {name}: exited with {code}"), Kind::Error),
+                Status::Crashed(what) => self.say(&format!("  {name}: crashed: {what}"), Kind::Error),
+            }
+            self.job = None;
+            changed = true;
+        }
+        changed
     }
 
     fn fail(&mut self, cmd: &str, what: &str, e: fs::Error) {
@@ -148,6 +200,9 @@ impl Terminal {
                     ("rm <path>", "remove a file or empty directory"),
                     ("mv <from> <to>", "move or rename"),
                     ("df", "disk usage"),
+                    ("<program>", "run a program from /Programs"),
+                    ("ps", "running programs"),
+                    ("kill <pid>", "stop a program"),
                     ("about", "version information"),
                     ("mem", "memory usage"),
                     ("cpu", "processor information"),
@@ -277,7 +332,27 @@ impl Terminal {
             }
             "reboot" | "restart" => out.push(Request::Reboot),
             "shutdown" | "poweroff" => out.push(Request::Shutdown),
-            _ => self.say(&format!("  {cmd}: command not found"), Kind::Error),
+            "ps" => {
+                let running = process::list();
+                if !running.is_empty() {
+                    self.say(&format!("  {:<8}NAME", "PID"), Kind::Accent);
+                }
+                for (pid, name) in running {
+                    self.say(&format!("  {pid:<8}{name}"), Kind::Output);
+                }
+            }
+            "kill" => match rest.parse::<u32>() {
+                Ok(pid) if process::kill(pid) => {}
+                Ok(_) => self.say(&format!("  kill: {rest}: no such program"), Kind::Error),
+                Err(_) => self.say("  usage: kill <pid>", Kind::Error),
+            },
+            _ => match self.program(cmd) {
+                Some(path) => match process::spawn(&path, rest, &self.cwd) {
+                    Ok(pid) => self.job = Some((pid, String::from(cmd.rsplit('/').next().unwrap_or(cmd)))),
+                    Err(e) => self.say(&format!("  {cmd}: {e}"), Kind::Error),
+                },
+                None => self.say(&format!("  {cmd}: command not found"), Kind::Error),
+            },
         }
     }
 }
@@ -304,6 +379,57 @@ impl App for Terminal {
     fn key(&mut self, key: Key, c: &mut Canvas, area: Rect, out: &mut Vec<Request>) -> Option<Rect> {
         self.caret_on = true;
         self.last_blink = time::millis();
+        if keyboard::ctrl() {
+            if let Key::Char('c') = key {
+                if let Some((pid, _)) = self.job {
+                    process::kill(pid);
+                }
+                let line = format!("{}{}^C", self.lead(), self.input);
+                self.input.clear();
+                self.partial.clear();
+                self.say(&line, Kind::Input);
+                self.draw(c, area);
+                return Some(area);
+            }
+            if let (Key::Char('d'), Some((pid, _))) = (key, &self.job) {
+                // End of input: send what's typed, then nothing more.
+                process::send_input(*pid, self.input.as_bytes());
+                process::close_input(*pid);
+                if !self.input.is_empty() {
+                    let line = format!("{}{}", self.partial, self.input);
+                    self.say(&line, Kind::Input);
+                    self.input.clear();
+                    self.partial.clear();
+                }
+                self.draw(c, area);
+                return Some(area);
+            }
+            return None;
+        }
+        if let Some((pid, _)) = self.job {
+            match key {
+                Key::Char('\n') => {
+                    let line = format!("{}{}", self.partial, self.input);
+                    self.input.push('\n');
+                    process::send_input(pid, self.input.as_bytes());
+                    self.input.clear();
+                    self.partial.clear();
+                    self.say(&line, Kind::Input);
+                    self.draw(c, area);
+                    return Some(area);
+                }
+                Key::Char('\u{8}') => {
+                    self.input.pop();
+                }
+                Key::Char(ch) if !ch.is_control() => {
+                    if self.partial.chars().count() + self.input.chars().count() + 1 < self.cols {
+                        self.input.push(ch);
+                    }
+                }
+                _ => return None,
+            }
+            return Some(self.draw_input(c, area));
+        }
         match key {
             Key::Char('\n') => {
                 let line = core::mem::take(&mut self.input);
@@ -347,12 +473,22 @@ impl App for Terminal {
     }
 
     fn tick(&mut self, now: u64, c: &mut Canvas, area: Rect) -> Option<Rect> {
+        if self.pump() {
+            self.draw(c, area);
+            return Some(area);
+        }
         if !self.focused || now - self.last_blink < BLINK_MS {
             return None;
         }
         self.last_blink = now;
         self.caret_on = !self.caret_on;
         Some(self.draw_input(c, area))
+    }
+
+    fn close(&mut self) {
+        if let Some((pid, _)) = self.job.take() {
+            process::detach(pid);
+        }
     }
 
     fn focus(&mut self, focused: bool, c: &mut Canvas, area: Rect) -> Option<Rect> {

@@ -30,6 +30,9 @@ mod memory;
 mod mouse;
 mod pci;
 mod power;
+mod process;
+mod programs;
+mod sched;
 mod screen;
 mod serial;
 mod theme;
@@ -103,6 +106,7 @@ extern "C" fn kmain() -> ! {
     let memmap = MEMMAP.response().expect("bootloader gave no memory map").entries();
     memory::init(hhdm, memmap);
     heap::init();
+    sched::init();
 
     let rsdp = RSDP.response().expect("no ACPI tables").address as u64;
     let madt = acpi::find_madt(rsdp).expect("no MADT in ACPI tables");
@@ -114,6 +118,7 @@ extern "C" fn kmain() -> ! {
     x86_64::instructions::interrupts::enable();
     if disk::init() {
         fs::init();
+        programs::install();
     }
     log!("cpu: interrupts on");
 
