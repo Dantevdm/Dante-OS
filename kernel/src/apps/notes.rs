@@ -1,6 +1,5 @@
 //! Notes: a ruled page to write on. Kept in memory until Dante has a disk.
 
-use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
 use noto_sans_mono_bitmap::{FontWeight, RasterHeight};
@@ -15,7 +14,6 @@ const FONT: RasterHeight = RasterHeight::Size16;
 const LINE_H: i32 = 28;
 const RULED: Rgb = Rgb::hex(0xE2E7E6);
 const MAX_CHARS: usize = 8000;
-const FOOTER_H: i32 = 30;
 
 pub struct Notes {
     text: String,
@@ -72,15 +70,11 @@ impl App for Notes {
         (500, 450)
     }
 
-    fn subtitle(&self) -> &str {
-        "untitled"
-    }
-
     fn draw(&mut self, c: &mut Canvas, area: Rect) {
         c.fill_rgb(area, PAPER);
         let gw = glyph_width(FONT, FontWeight::Regular) as i32;
         let cols = (area.w / gw).max(8) as usize;
-        let page = Rect::new(area.x, area.y, area.w, area.h - FOOTER_H);
+        let page = area;
         let rows = (page.h / LINE_H) as usize;
 
         // Ruled lines, like a notebook.
@@ -100,17 +94,6 @@ impl App for Notes {
         }
         self.caret = Rect::new(caret_x + 1, caret_y, 2, 17);
         self.draw_caret(c);
-
-        // Footer: a word count and an honest note about saving.
-        let words = self.text.split_whitespace().count();
-        let note = if self.text.is_empty() {
-            String::from("start typing · kept in memory, no disk yet")
-        } else {
-            format!("{words} word{} · kept in memory, no disk yet", if words == 1 { "" } else { "s" })
-        };
-        let fy = area.bottom() - FOOTER_H;
-        c.fill_rgb(Rect::new(area.x, fy + 6, area.w, 1), HAIRLINE);
-        c.text(area.x as usize, (fy + 13) as usize, &note, FONT, FontWeight::Light, MUTED, 0, 1.0);
     }
 
     fn key(&mut self, key: Key, c: &mut Canvas, area: Rect, _out: &mut Vec<Request>) -> Option<Rect> {

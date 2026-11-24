@@ -19,7 +19,9 @@ The first run downloads the prebuilt Limine bootloader into `tools/limine`.
 
 - **Mouse:** in QEMU the pointer follows your Mac's mouse directly, with no need to click into the window to capture it.
 - **Windows:** drag a window by its title bar, click a window to bring it forward, and close it with the circle at the top right (it turns into a ×). Ctrl+W closes the focused window.
-- **Launcher:** press Ctrl+Space, click DANTE or "type anything", or just start typing on the empty desktop. Type to search, Enter to open, 1-9 to jump, Esc to close. Start with `>` to run a terminal command.
+- **Top bar:** the mark on the left opens the system menu (About, Search, Restart, Shut Down). The focused app's name sits next to it. Search and the date and time are on the right.
+- **Dock:** click an app to open it, or to bring it forward if it's already open. A dot marks open apps.
+- **Launcher:** press Ctrl+Space, click a search icon, or just start typing on the empty desktop. Type to search, Enter to open, 1-9 to jump, Esc to close. Start with `>` to run a terminal command.
 - **Apps:** terminal, notes, clock and system.
 - **Terminal:** type `help`. Up and down arrows step through history, and Esc clears the line.
 
@@ -49,6 +51,7 @@ kernel/src/
   boot_screen.rs        the gear, the wordmark and the ruler progress bar
   desktop.rs            the wallpaper: sea, breathing sun, drifting waves, a passing plane
   wm.rs                 window manager and compositor (redraws only what changed)
+  bar.rs, dock.rs       top bar with system menu, and the app dock
   launcher.rs           search for apps and commands
   apps/                 terminal, notes, clock, system
   crash.rs              a calm crash page instead of a frozen screen

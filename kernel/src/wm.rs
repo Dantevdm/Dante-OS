@@ -6,12 +6,13 @@
 //! keeps it smooth without needing a GPU.
 
 use alloc::boxed::Box;
-use alloc::format;
-use alloc::string::{String, ToString};
+use alloc::string::ToString;
 use alloc::vec;
 use alloc::vec::Vec;
 
 use crate::apps::{self, App, AppKind, Request};
+use crate::bar::{self, BAR_H, Menu, MenuItem, TopBar};
+use crate::dock::{self, Dock};
 use crate::boot_screen::ease_out;
 use crate::desktop::{Desktop, MARGIN};
 use crate::gfx::{Canvas, Rect, Surface, mix_rgb, over, rounded_rect_sdf};
@@ -162,16 +163,11 @@ impl Window {
         self.paint_base(r);
         let f = noto_sans_mono_bitmap::RasterHeight::Size16;
         let wt = noto_sans_mono_bitmap::FontWeight::Regular;
-        let (num, name) = if self.focused { (SEA, INK) } else { (MUTED, MUTED) };
+        let name = if self.focused { INK } else { MUTED };
         let (x, y) = ((M + PAD_X) as usize, (M + 17) as usize);
         let (cx, cy) = self.close_center();
         let s = &mut self.surface;
-        let x = s.text(x, y, &format!("{:02}", self.id), f, wt, num, 0, 1.0);
-        let x = s.text(x + 12, y, self.app.kind().name(), f, wt, name, 0, 1.0);
-        let sub = self.app.subtitle();
-        if !sub.is_empty() {
-            s.text(x + 12, y, &format!("/ {sub}"), f, noto_sans_mono_bitmap::FontWeight::Light, MUTED, 0, 1.0);
-        }
+        s.text(x, y, self.app.kind().title(), f, wt, name, 0, 1.0);
         if self.close_hover {
             s.disc(cx as f32, cy as f32, 6.5, TERRACOTTA);
             s.line(cx as f32 - 2.5, cy as f32 - 2.5, cx as f32 + 2.5, cy as f32 + 2.5, PAPER, 1.0);
@@ -218,11 +214,6 @@ fn layer(row: &mut [u32], rx: i32, y: i32, c: &Canvas, cx: i32, cy: i32, alpha: 
     }
 }
 
-fn clock_text() -> String {
-    let n = time::now();
-    format!("{:02}:{:02}", n.hour, n.minute)
-}
-
 pub struct Wm {
     w: i32,
     h: i32,
@@ -231,6 +222,9 @@ pub struct Wm {
     windows: Vec<Window>,
     focused: bool,
     launcher: Option<Launcher>,
+    bar: TopBar,
+    menu: Option<Menu>,
+    dock: Dock,
     pointer: (i32, i32),
     pointer_img: Canvas,
     drag: Option<(i32, i32)>,
@@ -252,8 +246,7 @@ impl Wm {
             let s = g.as_ref().expect("no screen");
             (s.width, s.height)
         };
-        let mut desktop = Desktop::new(w, h);
-        desktop.clock = clock_text();
+        let desktop = Desktop::new(w, h);
         let mut wallpaper = Canvas::new(w, h, 0xFF00_0000);
         let all = wallpaper.bounds();
         desktop.paint(&mut wallpaper, all, now);
@@ -273,6 +266,9 @@ impl Wm {
             windows: Vec::new(),
             focused: false,
             launcher: None,
+            bar: TopBar::new(w),
+            menu: None,
+            dock: Dock::new(w, h),
             pointer: (w as i32 / 2, h as i32 / 2),
             pointer_img,
             drag: None,
@@ -308,11 +304,10 @@ impl Wm {
         self.dirty.push(win.full_rect());
         self.windows.push(win);
         self.focus_top(true);
-        self.update_footer(now);
         crate::log!("wm: opened {} ({} windows)", kind.name(), self.windows.len());
     }
 
-    fn close(&mut self, index: usize, now: u64) {
+    fn close(&mut self, index: usize, _now: u64) {
         let win = self.windows.remove(index);
         self.dirty.push(win.full_rect());
         if self.drag.is_some() {
@@ -321,7 +316,6 @@ impl Wm {
         let keep = self.focused;
         self.focused = false;
         self.focus_top(keep);
-        self.update_footer(now);
         crate::log!("wm: closed {} ({} windows)", win.app.kind().name(), self.windows.len());
     }
 
@@ -343,17 +337,46 @@ impl Wm {
                 self.dirty.push(win.screen_rect(now));
             }
         }
+        self.refresh_chrome();
+    }
+
+    /// Keep the top bar's app name and the dock's running dots in step.
+    fn refresh_chrome(&mut self) {
+        let app = match (self.focused, self.windows.last()) {
+            (true, Some(w)) => w.app.kind().title(),
+            _ => "",
+        };
+        if self.bar.set_app(app) {
+            self.dirty.push(self.bar.rect());
+        }
+        let windows = &self.windows;
+        if self.dock.set_running(|k| windows.iter().any(|w| w.app.kind() == k)) {
+            self.dirty.push(self.dock.rect());
+        }
+    }
+
+    /// Bring an app forward, or open it if it isn't running.
+    fn activate(&mut self, kind: AppKind, now: u64) {
+        match self.windows.iter().rposition(|w| w.app.kind() == kind) {
+            Some(i) => {
+                self.raise(i, now);
+                self.focus_top(true);
+            }
+            None => self.open(kind, now),
+        }
+    }
+
+    fn close_menu(&mut self) {
+        if let Some(m) = self.menu.take() {
+            self.dirty.push(m.rect());
+        }
+        if self.bar.set_mark_active(false) {
+            self.dirty.push(self.bar.rect());
+        }
     }
 
     fn window_at(&self, x: i32, y: i32) -> Option<usize> {
         self.windows.iter().rposition(|w| w.frame.contains(x, y))
-    }
-
-    fn update_footer(&mut self, now: u64) {
-        self.desktop.open = self.windows.len();
-        let r = self.desktop.footer_rect();
-        self.desktop.paint(&mut self.wallpaper, r, now);
-        self.dirty.push(r);
     }
 
     /// Carry out what an app asked for. `id` is the window that asked.
@@ -403,6 +426,7 @@ impl Wm {
 
     fn open_launcher(&mut self, query: &str, now: u64) {
         self.drag = None;
+        self.close_menu();
         self.launcher = Some(Launcher::new(self.w as usize, self.h as usize, query, now));
         self.dirty.push(self.screen());
     }
@@ -493,7 +517,7 @@ impl Wm {
             if let Some(win) = self.windows.last_mut() {
                 let before = win.screen_rect(now);
                 win.frame.x = (x - gx).clamp(-win.frame.w + 120, self.w - 120);
-                win.frame.y = (y - gy).clamp(0, self.h - 60);
+                win.frame.y = (y - gy).clamp(BAR_H - M + 6, self.h - 60);
                 self.dirty.push(before);
                 self.dirty.push(win.screen_rect(now));
             }
@@ -507,7 +531,16 @@ impl Wm {
             return;
         }
 
-        let hit = self.window_at(x, y);
+        if let Some(m) = self.menu.as_mut() {
+            if m.hover(x, y) {
+                self.dirty.push(m.rect());
+            }
+        }
+        if self.dock.hover(x, y) {
+            self.dirty.push(self.dock.rect());
+        }
+        let over_chrome = y < BAR_H || self.dock.contains(x, y) || self.menu.as_ref().is_some_and(|m| m.contains(x, y));
+        let hit = if over_chrome { None } else { self.window_at(x, y) };
         for (i, win) in self.windows.iter_mut().enumerate() {
             let hover = hit == Some(i) && win.hits_close(x, y);
             if hover != win.close_hover {
@@ -532,12 +565,51 @@ impl Wm {
             return;
         }
 
-        let Some(i) = self.window_at(x, y) else {
-            if self.desktop.launcher_hit(x, y) {
-                self.open_launcher("", now);
-            } else {
-                self.focus_top(false);
+        if let Some(m) = self.menu.as_ref() {
+            let item = m.item_at(x, y);
+            let inside = m.contains(x, y);
+            let on_mark = self.bar.hit(x, y) == Some(bar::Hit::Mark);
+            if inside || on_mark {
+                self.close_menu();
+                match item {
+                    Some(MenuItem::About) => self.activate(AppKind::System, now),
+                    Some(MenuItem::Search) => self.open_launcher("", now),
+                    Some(MenuItem::Restart) => power::reboot(),
+                    Some(MenuItem::ShutDown) => power::shutdown(),
+                    None => {}
+                }
+                return;
             }
+            self.close_menu();
+        }
+
+        if y < BAR_H {
+            match self.bar.hit(x, y) {
+                Some(bar::Hit::Mark) => {
+                    let m = Menu::new();
+                    self.dirty.push(m.rect());
+                    self.menu = Some(m);
+                    if self.bar.set_mark_active(true) {
+                        self.dirty.push(self.bar.rect());
+                    }
+                }
+                Some(bar::Hit::Search) => self.open_launcher("", now),
+                None => {}
+            }
+            return;
+        }
+
+        if self.dock.contains(x, y) {
+            match self.dock.item_at(x, y) {
+                Some(dock::Item::App(kind)) => self.activate(kind, now),
+                Some(dock::Item::Search) => self.open_launcher("", now),
+                None => {}
+            }
+            return;
+        }
+
+        let Some(i) = self.window_at(x, y) else {
+            self.focus_top(false);
             return;
         };
         self.raise(i, now);
@@ -574,6 +646,9 @@ impl Wm {
                 self.dirty.push(win.to_screen(r, now));
             }
         }
+        if self.dock.tick() {
+            self.dirty.push(self.dock.rect());
+        }
         if self.launcher.as_ref().is_some_and(|l| l.animating(now)) {
             self.dirty.push(self.screen());
         }
@@ -597,12 +672,8 @@ impl Wm {
 
         if now - self.last_clock_check >= 1000 {
             self.last_clock_check = now;
-            let clock = clock_text();
-            if clock != self.desktop.clock {
-                self.desktop.clock = clock;
-                let r = self.desktop.header_rect();
-                self.desktop.paint(&mut self.wallpaper, r, now);
-                self.dirty.push(r);
+            if self.bar.update_clock() {
+                self.dirty.push(self.bar.rect());
             }
         }
     }
@@ -651,6 +722,11 @@ impl Wm {
             for win in &self.windows {
                 let s = win.screen_rect(now);
                 layer(row, r.x, y, &win.surface, s.x, s.y, win.alpha(now));
+            }
+            layer(row, r.x, y, &self.bar.canvas, 0, 0, 255);
+            layer(row, r.x, y, &self.dock.canvas, self.dock.origin.0, self.dock.origin.1, 255);
+            if let Some(m) = self.menu.as_ref() {
+                layer(row, r.x, y, &m.canvas, m.origin.0, m.origin.1, 255);
             }
             if let (Some(l), Some(a)) = (self.launcher.as_ref(), launcher_alpha) {
                 layer(row, r.x, y, &l.canvas, 0, 0, a);

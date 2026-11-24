@@ -220,7 +220,3 @@ fn vm_poll() {
         push(Event::Abs { x: x as u16, y: y as u16, buttons });
     }
 }
-
-pub fn is_absolute() -> bool {
-    ABSOLUTE.load(Ordering::Relaxed)
-}

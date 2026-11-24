@@ -5,13 +5,10 @@
 //! Everything is painted into the wallpaper canvas through `paint(region)`, so
 //! any part of it can be repainted on its own when something moves.
 
-use alloc::format;
-use alloc::string::String;
 use core::f32::consts::PI;
-use noto_sans_mono_bitmap::{FontWeight, RasterHeight};
 
 use crate::boot_screen::ease_in_out;
-use crate::gfx::{Canvas, Rect, Rgb, Surface, text_width};
+use crate::gfx::{Canvas, Rect, Rgb, Surface};
 use crate::theme::*;
 
 const SUN: Rgb = Rgb::hex(0xF2CFB4);
@@ -34,14 +31,12 @@ pub struct Desktop {
     pub horizon: i32,
     sun_x: f32,
     sun_r: f32,
-    pub clock: String,
-    pub open: usize,
 }
 
 impl Desktop {
     pub fn new(w: usize, h: usize) -> Self {
         let (w, h) = (w as i32, h as i32);
-        Self { w, h, horizon: h * 2 / 3, sun_x: w as f32 * 1200.0 / 1440.0, sun_r: 74.0, clock: String::new(), open: 0 }
+        Self { w, h, horizon: h * 2 / 3, sun_x: w as f32 * 1200.0 / 1440.0, sun_r: 74.0 }
     }
 
     /// Design coordinates (1440×900) to screen coordinates.
@@ -65,14 +60,6 @@ impl Desktop {
     }
 
     // ---- Regions that change on their own ----
-
-    pub fn header_rect(&self) -> Rect {
-        Rect::new(0, 18, self.w, 32)
-    }
-
-    pub fn footer_rect(&self) -> Rect {
-        Rect::new(0, self.h - 64, self.w, 40)
-    }
 
     pub fn sun_rect(&self) -> Rect {
         let r = self.sun_r as i32 + 2;
@@ -105,11 +92,6 @@ impl Desktop {
         Rect::new(x as i32 - 13, y as i32 - 13, 27, 27)
     }
 
-    /// Clicking DANTE in the header or "type anything" in the footer opens the launcher.
-    pub fn launcher_hit(&self, x: i32, y: i32) -> bool {
-        Rect::new(MARGIN - 8, 18, 96, 32).contains(x, y) || Rect::new(MARGIN - 8, self.h - 64, 220, 40).contains(x, y)
-    }
-
     // ---- Painting ----
 
     pub fn paint(&self, c: &mut Canvas, region: Rect, now: u64) {
@@ -118,7 +100,7 @@ impl Desktop {
             return;
         }
         c.clip(region);
-        let (w, h) = (self.w, self.h);
+        let w = self.w;
 
         // Sky, then the sun, then the sea in front of its lower half.
         for y in region.y..region.bottom().min(self.horizon) {
@@ -143,16 +125,13 @@ impl Desktop {
             i += 1;
         }
 
-        // Dimension line across the sun, with its label.
+        // Dimension line across the sun.
         let dim_y = self.sy(500.0) as i32;
         let (x0, x1) = ((self.sun_x - self.sun_r) as i32, (self.sun_x + self.sun_r) as i32);
         if region.intersects(Rect::new(x0 - 40, dim_y - 30, x1 - x0 + 80, 44)) {
             c.fill_rgb(Rect::new(x0, dim_y, x1 - x0, 1), RULE);
             c.fill_rgb(Rect::new(x0, dim_y - 6, 1, 13), RULE);
             c.fill_rgb(Rect::new(x1, dim_y - 6, 1, 13), RULE);
-            let label = "Ø 148 · first light";
-            let lw = text_width(label, RasterHeight::Size16, FontWeight::Light, 0) as i32;
-            c.text((self.sun_x as i32 - lw / 2) as usize, (dim_y - 24) as usize, label, RasterHeight::Size16, FontWeight::Light, MUTED, 0, 1.0);
         }
 
         // The plane's flight path, dashed, and the plane on it.
@@ -192,30 +171,6 @@ impl Desktop {
             c.blend(x as i64, y as i64, WAVE, 1.0 - frac);
             c.fill_rgb(Rect::new(x as i32 + 1, y as i32, l as i32 - 1, 1), WAVE);
             c.blend(x as i64 + l as i64, y as i64, WAVE, frac);
-        }
-
-        // Header: DANTE · workspace · clock.
-        let f = RasterHeight::Size16;
-        if region.intersects(self.header_rect()) {
-            c.text(MARGIN as usize, 26, "DANTE", f, FontWeight::Regular, INK, 2, 1.0);
-            let ws = "work";
-            let ww = text_width(ws, f, FontWeight::Regular, 1) as i32;
-            c.text((w / 2 - ww / 2) as usize, 26, ws, f, FontWeight::Regular, INK, 1, 1.0);
-            let cw = text_width(&self.clock, f, FontWeight::Regular, 1) as i32;
-            c.text((w - MARGIN - cw) as usize, 26, &self.clock, f, FontWeight::Regular, MUTED, 1, 1.0);
-        }
-
-        // Footer, resting on the water.
-        if region.intersects(self.footer_rect()) {
-            let y = h - 56;
-            c.disc(MARGIN as f32 + 4.0, y as f32 + 9.0, 4.5, SEA);
-            c.text(MARGIN as usize + 20, y as usize, "type anything", f, FontWeight::Regular, INK, 0, 1.0);
-            let status = match self.open {
-                0 => String::from("nothing open"),
-                n => format!("{n} open"),
-            };
-            let sw = text_width(&status, f, FontWeight::Regular, 0) as i32;
-            c.text((w - MARGIN - sw) as usize, y as usize, &status, f, FontWeight::Regular, INK, 0, 1.0);
         }
 
         c.unclip();

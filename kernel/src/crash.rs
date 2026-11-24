@@ -34,7 +34,6 @@ fn draw(s: &mut crate::screen::Screen, what: &str, details: &[(&str, u64)]) {
     s.clear_rect(0, 0, w, h);
 
     s.disc(x as f32 + 4.0, y0 as f32 - 30.0, 4.5, TERRACOTTA);
-    s.text(x + 18, y0 - 40, "dante stopped", RasterHeight::Size16, FontWeight::Regular, MUTED, 0, 1.0);
     s.text(x, y0, what, RasterHeight::Size32, FontWeight::Regular, INK, 0, 1.0);
 
     let mut y = y0 + 64;
@@ -46,5 +45,5 @@ fn draw(s: &mut crate::screen::Screen, what: &str, details: &[(&str, u64)]) {
         s.text(x, y, line.as_str(), RasterHeight::Size16, FontWeight::Regular, INK, 0, 1.0);
         y += 26;
     }
-    s.text(x, h - 64, "The machine is halted. Nothing was lost that wasn't already in memory. Restart to continue.", RasterHeight::Size16, FontWeight::Regular, MUTED, 0, 1.0);
+    s.text(x, h - 64, "Restart your computer to continue.", RasterHeight::Size16, FontWeight::Regular, MUTED, 0, 1.0);
 }

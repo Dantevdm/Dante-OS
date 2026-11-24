@@ -33,27 +33,21 @@ impl App for System {
         (460, 450)
     }
 
-    fn subtitle(&self) -> &str {
-        "this machine"
-    }
-
     fn draw(&mut self, c: &mut Canvas, area: Rect) {
         c.fill_rgb(area, PAPER);
         let (x, y) = (area.x as usize, area.y as usize);
         c.text(x, y, "Dante OS", RasterHeight::Size32, FontWeight::Light, INK, 0, 1.0);
-        c.text(x, y + 40, &format!("{VERSION} · First Light"), RasterHeight::Size16, FontWeight::Regular, MUTED, 0, 1.0);
-        c.disc(area.right() as f32 - 6.0, area.y as f32 + 18.0, 5.0, SEA);
+        c.text(x, y + 40, &format!("Version {VERSION}"), RasterHeight::Size16, FontWeight::Regular, MUTED, 0, 1.0);
 
         let (used, total) = memory::stats();
         let (heap_used, heap_free) = heap::stats();
-        let pointer = if crate::mouse::is_absolute() { "absolute" } else { "PS/2" };
         let rows: [(&str, String); 6] = [
-            ("processor", self.brand.clone()),
-            ("cores", format!("{} found · 1 in use", super::cores())),
-            ("memory", format!("{} of {} MiB", used * 4 / 1024, total * 4 / 1024)),
-            ("kernel heap", format!("{} KiB of {} MiB", heap_used / 1024, (heap_used + heap_free) / (1024 * 1024))),
-            ("display", format!("{} × {} · {pointer} pointer", DISPLAY_W.load(Ordering::Relaxed), DISPLAY_H.load(Ordering::Relaxed))),
-            ("up", super::uptime_text()),
+            ("Processor", self.brand.clone()),
+            ("Cores", format!("{}", super::cores())),
+            ("Memory", format!("{} of {} MiB", used * 4 / 1024, total * 4 / 1024)),
+            ("Kernel heap", format!("{} KiB of {} MiB", heap_used / 1024, (heap_used + heap_free) / (1024 * 1024))),
+            ("Display", format!("{} × {}", DISPLAY_W.load(Ordering::Relaxed), DISPLAY_H.load(Ordering::Relaxed))),
+            ("Uptime", super::uptime_text()),
         ];
         let gw = glyph_width(RasterHeight::Size16, FontWeight::Regular) as i32;
         let max_chars = ((area.w - 120) / gw).max(4) as usize;
@@ -78,7 +72,6 @@ impl App for System {
         }
         let fill = if total == 0 { 0 } else { ((used as i64 * area.w as i64) / total as i64).max(2) as i32 };
         c.fill_rgb(Rect::new(area.x, by - 1, fill, 3), SEA);
-        c.text(x, (by + 10) as usize, "memory in use", RasterHeight::Size16, FontWeight::Light, MUTED, 0, 1.0);
     }
 
     fn tick(&mut self, now: u64, c: &mut Canvas, area: Rect) -> Option<Rect> {

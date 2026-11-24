@@ -29,10 +29,6 @@ impl App for Clock {
         (360, 440)
     }
 
-    fn subtitle(&self) -> &str {
-        "local time"
-    }
-
     fn draw(&mut self, c: &mut Canvas, area: Rect) {
         c.fill_rgb(area, PAPER);
         let now = time::now();

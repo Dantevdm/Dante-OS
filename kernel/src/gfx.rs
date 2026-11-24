@@ -429,6 +429,43 @@ impl Canvas {
 
 }
 
+impl Canvas {
+    /// A rounded panel: optional soft shadow, a fill (which may be translucent)
+    /// and an optional hairline border, all anti-aliased.
+    pub fn panel(&mut self, frame: Rect, radius: f32, fill: Rgb, fill_alpha: f32, border: Option<Rgb>, shadow: f32) {
+        let reach = if shadow > 0.0 { 22 } else { 1 };
+        let area = frame.expand(reach).union(frame.offset(0, 6).expand(reach)).intersect(self.clip.unwrap_or(self.bounds()));
+        let (fw, fh) = (frame.w as f32, frame.h as f32);
+        for py in area.y..area.bottom() {
+            for px in area.x..area.right() {
+                let (fx, fy) = ((px - frame.x) as f32 + 0.5, (py - frame.y) as f32 + 0.5);
+                let d = rounded_rect_sdf(fx, fy, fw, fh, radius);
+                let i = py as usize * self.w + px as usize;
+                let mut v = self.px[i];
+                if shadow > 0.0 && d > -0.5 {
+                    let ds = rounded_rect_sdf(fx, fy - 5.0, fw, fh, radius);
+                    let t = (1.0 - (ds + 3.0) / 18.0).clamp(0.0, 1.0);
+                    let a = shadow * t * t * (d + 0.5).clamp(0.0, 1.0);
+                    if a > 0.002 {
+                        v = over(v, crate::theme::INK.argb(0), (a * 255.0) as u32);
+                    }
+                }
+                let cover = (0.5 - d).clamp(0.0, 1.0);
+                if cover > 0.0 {
+                    v = over(v, fill.argb(0), (cover * fill_alpha * 255.0 + 0.5) as u32);
+                    if let Some(b) = border {
+                        let edge = (1.0 - (d + 0.5).abs()).clamp(0.0, 1.0);
+                        if edge > 0.0 {
+                            v = over(v, b.argb(0), (edge * 255.0) as u32);
+                        }
+                    }
+                }
+                self.px[i] = v;
+            }
+        }
+    }
+}
+
 impl Surface for Canvas {
     fn size(&self) -> (usize, usize) {
         (self.w, self.h)

@@ -34,12 +34,21 @@ impl AppKind {
         }
     }
 
+    pub fn title(self) -> &'static str {
+        match self {
+            AppKind::Terminal => "Terminal",
+            AppKind::Notes => "Notes",
+            AppKind::Clock => "Clock",
+            AppKind::System => "System",
+        }
+    }
+
     pub fn describe(self) -> &'static str {
         match self {
-            AppKind::Terminal => "commands for the kernel",
-            AppKind::Notes => "write something down",
-            AppKind::Clock => "the time, calmly",
-            AppKind::System => "what this machine is",
+            AppKind::Terminal => "Command line",
+            AppKind::Notes => "Text notes",
+            AppKind::Clock => "Clock",
+            AppKind::System => "System information",
         }
     }
 
@@ -59,10 +68,6 @@ pub trait App {
     fn kind(&self) -> AppKind;
     /// Preferred window size (the paper, including the title bar).
     fn size(&self) -> (i32, i32);
-    /// A short note shown after the title, like a path.
-    fn subtitle(&self) -> &str {
-        ""
-    }
     /// Draw the whole content area.
     fn draw(&mut self, c: &mut Canvas, area: Rect);
 

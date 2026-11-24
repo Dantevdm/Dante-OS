@@ -58,8 +58,7 @@ impl Terminal {
             focused: true,
             last_blink: 0,
         };
-        t.say(&format!("Dante OS {VERSION}. Good morning."), Kind::Input);
-        t.say("Type 'help' to see what I can do.", Kind::Output);
+        t.say(&format!("Dante OS {VERSION}"), Kind::Output);
         t.say("", Kind::Output);
         t
     }
@@ -111,26 +110,25 @@ impl Terminal {
         match cmd {
             "help" => {
                 for (name, what) in [
-                    ("open <app>", "open terminal, notes, clock or system"),
-                    ("about", "what Dante OS is"),
-                    ("mem", "memory in use"),
-                    ("cpu", "the processor we're running on"),
+                    ("open <app>", "open an app"),
+                    ("about", "version information"),
+                    ("mem", "memory usage"),
+                    ("cpu", "processor information"),
                     ("uptime", "time since boot"),
-                    ("time", "today's date and time"),
-                    ("echo <text>", "say something back"),
-                    ("clear", "a clean page"),
+                    ("time", "date and time"),
+                    ("echo <text>", "print text"),
+                    ("clear", "clear the screen"),
                     ("close", "close this window"),
-                    ("crash", "test the crash screen"),
-                    ("reboot", "start again"),
-                    ("shutdown", "power off"),
+                    ("crash", "trigger a kernel fault"),
+                    ("reboot", "restart"),
+                    ("shutdown", "shut down"),
                 ] {
                     self.say(&format!("  {name:<13}{what}"), Kind::Output);
                 }
             }
             "about" | "version" => {
-                self.say(&format!("Dante OS {VERSION}, First Light."), Kind::Accent);
-                self.say("A small kernel in Rust, written from scratch.", Kind::Output);
-                self.say("x86-64 · APIC timer · PS/2 keyboard and mouse · windows", Kind::Output);
+                self.say(&format!("Dante OS {VERSION}"), Kind::Accent);
+                self.say("x86-64 kernel written in Rust", Kind::Output);
             }
             "apps" => {
                 for k in AppKind::ALL {
@@ -139,7 +137,7 @@ impl Terminal {
             }
             "open" => match AppKind::from_name(rest) {
                 Some(k) => out.push(Request::Open(k)),
-                None => self.say("  open what? terminal, notes, clock or system", Kind::Error),
+                None => self.say("  usage: open terminal|notes|clock|system", Kind::Error),
             },
             "notes" | "clock" | "system" => out.push(Request::Open(AppKind::from_name(cmd).unwrap())),
             "mem" => {
@@ -167,7 +165,7 @@ impl Terminal {
             }
             "reboot" | "restart" => out.push(Request::Reboot),
             "shutdown" | "poweroff" => out.push(Request::Shutdown),
-            _ => self.say(&format!("  I don't know '{cmd}' yet. Try 'help'."), Kind::Error),
+            _ => self.say(&format!("  {cmd}: command not found"), Kind::Error),
         }
     }
 }
@@ -179,10 +177,6 @@ impl App for Terminal {
 
     fn size(&self) -> (i32, i32) {
         (660, 430)
-    }
-
-    fn subtitle(&self) -> &str {
-        "~"
     }
 
     fn draw(&mut self, c: &mut Canvas, area: Rect) {
