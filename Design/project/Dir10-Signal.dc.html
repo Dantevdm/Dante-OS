@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction 10: Signal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#FF7A1A}a:hover{color:#FFA15F}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #2A2C2B; color: #ECEBE6; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: 1fr 1fr 40px; gap: 1px">
+
+  <section aria-label="Editor" style="grid-row: span 2; background: #0E0F0F; padding: 28px 32px; display: flex; flex-direction: column; gap: 16px; box-shadow: inset 0 0 0 1.5px #FF7A1A">
+    <div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9C9B95"><span><span style="color: #FF7A1A">1</span> · kernel/src/main.rs</span><span>Rust</span></div>
+    <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.85; color: #D8D6CF; white-space: pre-wrap"><span style="color: #6E6D68">// Dante OS kernel</span>
+<span style="color: #FF7A1A">extern</span> "C" <span style="color: #FF7A1A">fn</span> kmain() -&gt; ! {
+    serial::init();
+    log!("Dante kernel starting");
+
+    <span style="color: #FF7A1A">let</span> cores = CPUS.response()
+        .map(|r| r.cpus().len());
+    log!("cpu: {cores} cores online");
+
+    boot_screen(&amp;<span style="color: #FF7A1A">mut</span> screen);
+    halt();
+}</pre>
+  </section>
+
+  <section aria-label="Terminal" style="background: #0E0F0F; padding: 24px 28px; display: flex; flex-direction: column; gap: 14px">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9C9B95"><span style="color: #ECEBE6">2</span> · terminal</div>
+    <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: #D8D6CF">❯ ./run.sh
+==&gt; Building kernel
+Dante kernel 0.1.0 starting
+cpu: 4 cores online
+<span style="color: #FF7A1A">Dante kernel ready</span></pre>
+  </section>
+
+  <section aria-label="Overview" style="background: #0E0F0F; padding: 24px 28px; display: flex; flex-direction: column; gap: 18px">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9C9B95"><span style="color: #ECEBE6">3</span> · today</div>
+    <span style="font-weight: 300; font-size: 44px; line-height: 1.05">15:42<span style="color: #9C9B95"> Mon</span></span>
+    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 15px">
+      <div style="display: flex; justify-content: space-between"><span>Kernel design review</span><span style="color: #9C9B95">16:30</span></div>
+      <div style="display: flex; justify-content: space-between"><span>Budget 2027.xlsx</span><span style="color: #E9B46A">Windows</span></div>
+    </div>
+  </section>
+
+  <footer style="grid-column: span 2; background: #0E0F0F; display: flex; align-items: center; gap: 22px; padding: 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9C9B95">
+    <span style="padding: 3px 8px; background: #FF7A1A; color: #0E0F0F; font-weight: 500">DANTE</span>
+    <span><span style="color: #ECEBE6">super+↵</span> new pane</span>
+    <span><span style="color: #ECEBE6">super+1..9</span> jump</span>
+    <span><span style="color: #ECEBE6">super+space</span> command</span>
+    <span style="flex: 1"></span>
+    <span>work · 3 panes · 86%</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

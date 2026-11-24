@@ -1,0 +1,4 @@
+kernel/target/
+build/
+tools/limine/
+.DS_Store

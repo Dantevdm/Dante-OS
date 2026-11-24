@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Windows app on Dante OS</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&amp;family=Inter+Tight:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#C8FF2E}a:hover{color:#E2FF8A}
+button{font:inherit;color:inherit}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #08070D; color: #F5F3FF; font-family: 'Inter Tight', system-ui, sans-serif; font-size: 14px">
+
+  <svg aria-hidden="true" width="1440" height="900" viewBox="0 0 1440 900" style="position: absolute; inset: 0">
+    <defs><filter id="melt" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="100"></feGaussianBlur></filter></defs>
+    <g filter="url(#melt)">
+      <ellipse cx="300" cy="120" rx="420" ry="260" fill="#FF8A1F"></ellipse>
+      <ellipse cx="1200" cy="300" rx="380" ry="320" fill="#6D2BFF"></ellipse>
+      <ellipse cx="700" cy="900" rx="520" ry="240" fill="#FF3D7F"></ellipse>
+    </g>
+  </svg>
+
+  <!-- Spreadsheet window -->
+  <section aria-label="Spreadsheet window" style="position: absolute; left: 40px; top: 40px; width: 920px; height: 820px; border-radius: 28px; background: rgba(16,14,26,0.66); backdrop-filter: blur(36px); border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 40px 90px rgba(0,0,0,0.5); overflow: hidden; display: flex; flex-direction: column">
+    <div style="height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 16px 0 24px; flex-shrink: 0">
+      <span style="font-family: Unbounded, sans-serif; font-weight: 600; font-size: 18px">Budget 2027.xlsx</span>
+      <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: linear-gradient(120deg,#FFB54A,#FF8A1F); color: #2A1600">
+        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="1.5"></rect><rect x="13" y="3" width="8" height="8" rx="1.5"></rect><rect x="3" y="13" width="8" height="8" rx="1.5"></rect><rect x="13" y="13" width="8" height="8" rx="1.5"></rect></svg>
+        Windows app · running natively
+      </span>
+      <div style="flex: 1"></div>
+      <button aria-label="Close" style="width: 36px; height: 36px; border: 0; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+    </div>
+    <!-- The app's own (generic) UI -->
+    <div style="flex: 1; margin: 0 10px 10px; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; background: #FAFAF8; color: #1F2328; font-family: 'Inter Tight', sans-serif">
+      <div style="display: flex; gap: 20px; padding: 10px 16px; font-size: 13px; border-bottom: 1px solid #E2E2DE">
+        <span>File</span><span>Edit</span><span>View</span><span>Insert</span><span>Format</span><span>Data</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; border-bottom: 1px solid #E2E2DE">
+        <span style="width: 48px; padding: 4px 8px; background: #FFFFFF; border: 1px solid #D4D4D0; border-radius: 6px">B4</span>
+        <span style="flex: 1; padding: 4px 8px; background: #FFFFFF; border: 1px solid #D4D4D0; border-radius: 6px; font-family: 'JetBrains Mono', monospace">=SUM(B2:B3)</span>
+      </div>
+      <div style="flex: 1; display: grid; grid-template-columns: 44px 220px repeat(5, minmax(0, 1fr)); grid-auto-rows: 28px; font-size: 13px; overflow: hidden">
+        <sc-for list="{{cells}}" as="c" hint-placeholder-count="80">
+          <div style="{{c.style}}">{{c.v}}</div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it runs -->
+  <aside aria-label="How this app runs" style="position: absolute; left: 990px; top: 40px; width: 410px; height: 820px; border-radius: 28px; background: rgba(14,12,22,0.58); backdrop-filter: blur(36px); border: 1px solid rgba(255,255,255,0.14); padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 26px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #FFB54A">No VM. No Windows.</span>
+      <span style="font-family: Unbounded, sans-serif; font-weight: 800; font-size: 30px; line-height: 1.08; letter-spacing: -0.5px">Your Windows apps, straight on Dante.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; position: relative">
+      <div style="position: absolute; left: 21px; top: 22px; bottom: 22px; width: 2px; background: linear-gradient(#FFB54A, #C8FF2E)"></div>
+      <sc-for list="{{layers}}" as="l" hint-placeholder-count="4">
+        <div style="display: flex; align-items: center; gap: 16px; padding: 10px 0; position: relative">
+          <span style="{{l.node}}">{{l.n}}</span>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-weight: 700; font-size: 15px">{{l.name}}</span>
+            <span style="color: rgba(245,243,255,0.66)">{{l.sub}}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(245,243,255,0.6); padding-bottom: 6px">What it can reach</span>
+      <sc-for list="{{access}}" as="a" hint-placeholder-count="4">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08)">
+          <span style="font-weight: 500">{{a.name}}</span>
+          <span role="switch" aria-checked="{{a.on}}" aria-label="{{a.name}}" style="{{a.track}}"><span style="{{a.knob}}"></span></span>
+        </div>
+      </sc-for>
+    </div>
+  </aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const head = 'background: #EFEFEB; color: #5A5F66; display: flex; align-items: center; justify-content: center; border-right: 1px solid #DCDCD8; border-bottom: 1px solid #DCDCD8';
+    const cell = 'background: #FFFFFF; padding: 0 10px; display: flex; align-items: center; border-right: 1px solid #ECECE8; border-bottom: 1px solid #ECECE8';
+    const rows = [['Category', 'Q1', 'Q2', 'Q3', 'Q4', 'Total'], ['Hardware'], ['Software licences'], ['Subtotal']];
+    const cells = [];
+    ['', 'A', 'B', 'C', 'D', 'E', 'F'].forEach((h) => cells.push({ v: h, style: head }));
+    for (let r = 0; r < 25; r++) {
+      const data = rows[r] || [];
+      cells.push({ v: String(r + 1), style: head });
+      for (let c = 0; c < 6; c++) {
+        const num = r >= 1 && r <= 3 && c >= 1;
+        const bold = r === 0 || r === 3;
+        const sel = r === 3 && c === 1;
+        cells.push({ v: data[c] || (num ? '[AMOUNT]' : ''), style: cell + (bold ? '; font-weight: 700' : '') + (num ? '; justify-content: flex-end; color: #5A5F66' : '') + (sel ? '; outline: 2px solid #FF8A1F; outline-offset: -2px' : '') });
+      }
+    }
+    const node = (bg, fg) => 'width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: Unbounded, sans-serif; font-weight: 800; font-size: 15px; position: relative; background: ' + bg + '; color: ' + fg;
+    const layers = [
+      { n: '1', name: 'Spreadsheet.exe', sub: 'The app, unmodified', bg: '#FFB54A', fg: '#2A1600' },
+      { n: '2', name: 'Dante Compat', sub: 'Translates Windows calls', bg: '#FF8A1F', fg: '#2A1600' },
+      { n: '3', name: 'Graphics bridge', sub: 'DirectX → Vulkan', bg: '#B7E64A', fg: '#08070D' },
+      { n: '4', name: 'Dante kernel', sub: 'Native speed', bg: '#C8FF2E', fg: '#08070D' }
+    ].map((l) => ({ ...l, node: node(l.bg, l.fg) }));
+    const sw = (on) => ({
+      track: 'width: 46px; height: 28px; border-radius: 999px; padding: 3px; box-sizing: border-box; display: flex; ' + (on ? 'background: #C8FF2E; justify-content: flex-end' : 'background: rgba(255,255,255,0.16); justify-content: flex-start'),
+      knob: 'width: 22px; height: 22px; border-radius: 999px; background: ' + (on ? '#08070D' : '#F5F3FF')
+    });
+    const access = [
+      { name: 'Documents › Finance', on: true },
+      { name: 'Everything else in Home', on: false },
+      { name: 'Internet', on: false },
+      { name: 'Printer', on: true }
+    ].map((a) => ({ ...a, ...sw(a.on), on: String(a.on) }));
+    return { cells, layers, access };
+  }
+}
+</script>
+</body>
+</html>

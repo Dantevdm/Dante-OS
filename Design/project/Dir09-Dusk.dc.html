@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction 9: Dusk</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@200;400;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#FFD2A6}a:hover{color:#FFE5CC}
+button{font:inherit;color:inherit}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: linear-gradient(180deg, #1B1838 0%, #3B2A55 38%, #A8607A 68%, #F2A97E 86%, #F7C79C 100%); color: #FFF7EF; font-family: Urbanist, sans-serif">
+
+  <svg aria-hidden="true" width="1440" height="900" viewBox="0 0 1440 900" style="position: absolute; inset: 0">
+    <circle cx="1040" cy="640" r="60" fill="#FFE2C2" opacity="0.85"></circle>
+    <path d="M0 700 C 240 620, 420 660, 620 640 S 1040 600, 1440 660 L 1440 900 L 0 900 Z" fill="#2A1F3D" opacity="0.75"></path>
+    <path d="M0 780 C 300 720, 560 760, 820 740 S 1240 720, 1440 760 L 1440 900 L 0 900 Z" fill="#1A142A"></path>
+  </svg>
+
+  <div style="position: absolute; top: 80px; left: 0; right: 0; text-align: center; display: flex; flex-direction: column; gap: 6px">
+    <span style="font-weight: 200; font-size: 120px; letter-spacing: -3px; line-height: 1">15:42</span>
+    <span style="font-weight: 400; font-size: 20px; color: rgba(255,247,239,0.8)">Golden hour in 12 minutes</span>
+  </div>
+
+  <nav aria-label="Dock" style="position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 22px; border-radius: 999px; background: rgba(26,20,42,0.45); backdrop-filter: blur(24px); border: 1px solid rgba(255,247,239,0.18)">
+    <span style="font-size: 16px; color: rgba(255,247,239,0.75); width: 260px">Ask, open or find…</span>
+    <button aria-label="Files" style="width: 48px; height: 48px; border: 0; border-radius: 999px; background: rgba(255,247,239,0.16)"></button>
+    <button aria-label="Terminal" style="width: 48px; height: 48px; border: 0; border-radius: 999px; background: rgba(255,247,239,0.16)"></button>
+    <button aria-label="Browser" style="width: 48px; height: 48px; border: 0; border-radius: 999px; background: rgba(255,247,239,0.16)"></button>
+    <button aria-label="Music" style="width: 48px; height: 48px; border: 0; border-radius: 999px; background: #FFD2A6"></button>
+  </nav>
+
+  <div style="position: absolute; right: 48px; top: 48px; width: 280px; padding: 20px 22px; border-radius: 24px; background: rgba(26,20,42,0.4); backdrop-filter: blur(24px); border: 1px solid rgba(255,247,239,0.16); display: flex; flex-direction: column; gap: 6px">
+    <span style="font-size: 12px; letter-spacing: 2px; color: #FFD2A6">FOCUS</span>
+    <span style="font-weight: 600; font-size: 18px">Interrupt handler</span>
+    <span style="color: rgba(255,247,239,0.75)">Notifications held until 17:00</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

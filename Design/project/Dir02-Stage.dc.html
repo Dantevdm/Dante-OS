@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction 2: Stage</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#E9D8B4}a:hover{color:#F6EBD3}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: radial-gradient(60% 55% at 50% 0%, #3A332A 0%, #161412 60%, #100E0C 100%); color: #F3EEE6; font-family: Manrope, sans-serif">
+
+  <div style="position: absolute; top: 28px; left: 40px; right: 40px; display: flex; justify-content: space-between; font-size: 13px; color: rgba(243,238,230,0.7)">
+    <span style="font-weight: 800; letter-spacing: 3px; color: #E9D8B4">DANTE</span>
+    <span>Monday 23 November · 15:42</span>
+  </div>
+
+  <!-- Center stage -->
+  <div style="position: absolute; left: 50%; top: 84px; transform: translateX(-50%); width: 980px; height: 560px; border-radius: 22px; background: #1E1B18; border: 1px solid rgba(233,216,180,0.18); box-shadow: 0 80px 140px rgba(0,0,0,0.55); overflow: hidden; display: flex">
+    <div style="width: 240px; padding: 28px 22px; border-right: 1px solid rgba(233,216,180,0.1); display: flex; flex-direction: column; gap: 14px; font-size: 14px; color: rgba(243,238,230,0.7)">
+      <span style="font-size: 11px; letter-spacing: 2px; color: #E9D8B4">PROJECTS</span>
+      <span style="color: #F3EEE6; font-weight: 700">dante-os</span>
+      <span>kernel</span>
+      <span>compositor</span>
+      <span>win32-compat</span>
+    </div>
+    <div style="flex: 1; padding: 44px 52px; display: flex; flex-direction: column; gap: 18px">
+      <span style="font-size: 12px; letter-spacing: 2px; color: #E9D8B4">FILES · DANTE-OS</span>
+      <span style="font-weight: 800; font-size: 46px; line-height: 1.05; letter-spacing: -1px">Everything for the kernel, in one place.</span>
+      <div style="margin-top: 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px">
+        <div style="height: 130px; border-radius: 16px; background: linear-gradient(160deg, #3A332A, #24201C); border: 1px solid rgba(233,216,180,0.14); padding: 16px; box-sizing: border-box; display: flex; align-items: flex-end; font-weight: 700">kernel</div>
+        <div style="height: 130px; border-radius: 16px; background: #24201C; border: 1px solid rgba(233,216,180,0.1); padding: 16px; box-sizing: border-box; display: flex; align-items: flex-end; font-weight: 700">compositor</div>
+        <div style="height: 130px; border-radius: 16px; background: #24201C; border: 1px solid rgba(233,216,180,0.1); padding: 16px; box-sizing: border-box; display: flex; align-items: flex-end; font-weight: 700">Roadmap.md</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wings: other apps on a shelf -->
+  <div style="position: absolute; left: 0; right: 0; bottom: 40px; height: 170px; perspective: 900px; display: flex; justify-content: center; gap: 22px">
+    <div style="width: 200px; height: 130px; border-radius: 14px; background: #24201C; border: 1px solid rgba(233,216,180,0.14); transform: rotateX(28deg); padding: 14px; box-sizing: border-box; font-size: 13px; font-weight: 700">Terminal</div>
+    <div style="width: 200px; height: 130px; border-radius: 14px; background: #24201C; border: 1px solid rgba(233,216,180,0.14); transform: rotateX(28deg); padding: 14px; box-sizing: border-box; font-size: 13px; font-weight: 700">Mail</div>
+    <div style="width: 200px; height: 130px; border-radius: 14px; background: #E9D8B4; color: #161412; transform: rotateX(28deg) translateY(-10px); padding: 14px; box-sizing: border-box; font-size: 13px; font-weight: 800">Files · on stage</div>
+    <div style="width: 200px; height: 130px; border-radius: 14px; background: #24201C; border: 1px solid rgba(233,216,180,0.14); transform: rotateX(28deg); padding: 14px; box-sizing: border-box; font-size: 13px; font-weight: 700">Spreadsheet <span style="color: #E9B46A">· Windows</span></div>
+    <div style="width: 200px; height: 130px; border-radius: 14px; background: #24201C; border: 1px solid rgba(233,216,180,0.14); transform: rotateX(28deg); padding: 14px; box-sizing: border-box; font-size: 13px; font-weight: 700">Music</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

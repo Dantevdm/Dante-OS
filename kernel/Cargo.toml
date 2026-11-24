@@ -1,0 +1,25 @@
+[package]
+name = "dante-kernel"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "dante-kernel"
+test = false
+bench = false
+
+[dependencies]
+libm = "0.2.16"
+limine = "0.6"
+linked_list_allocator = "0.10.6"
+noto-sans-mono-bitmap = { version = "0.4.0", default-features = false, features = ["size_16", "size_32", "regular", "bold", "unicode-basic-latin", "unicode-latin-1-supplement"] }
+pc-keyboard = "0.9.0"
+pic8259 = "0.11.0"
+spin = "0.12.3"
+x86_64 = "0.15.5"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

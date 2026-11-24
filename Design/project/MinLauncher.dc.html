@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dante First Light: launcher</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400&amp;family=IBM+Plex+Mono:wght@300;400&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#3F6E7C}a:hover{color:#2C5260}
+button,input{font:inherit;color:inherit}
+@keyframes dante-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #EEEFEC; color: #1E2A30; font-family: 'Inter Tight', sans-serif; font-weight: 300">
+
+  <svg aria-hidden="true" width="1440" height="900" viewBox="0 0 1440 900" style="position: absolute; inset: 0">
+    <line x1="56" y1="300" x2="1384" y2="300" stroke="#1E2A30" stroke-width="1"></line>
+    <g stroke="#7F969D" stroke-width="1">
+      <line x1="56" y1="300" x2="56" y2="310"></line><line x1="388" y1="300" x2="388" y2="306"></line><line x1="720" y1="300" x2="720" y2="310"></line><line x1="1052" y1="300" x2="1052" y2="306"></line><line x1="1384" y1="300" x2="1384" y2="310"></line>
+    </g>
+  </svg>
+
+  <header style="position: absolute; top: 30px; left: 56px; right: 56px; display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 1px; color: #5E6B70">
+    <span style="color: #1E2A30">DANTE</span>
+    <span>esc to close</span>
+  </header>
+
+  <label style="position: absolute; left: 56px; right: 56px; top: 150px; display: block">
+    <span style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search apps, files and commands</span>
+    <input value="kern" style="width: 100%; background: transparent; border: 0; outline: none; font-family: 'Inter Tight', sans-serif; font-weight: 200; font-size: 120px; letter-spacing: -5px; line-height: 1; caret-color: {{accent}}">
+  </label>
+
+  <div style="position: absolute; left: 56px; right: 56px; top: 336px; display: flex; flex-direction: column">
+    <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+      <button style="{{r.style}}">
+        <span style="width: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #5E6B70; text-align: left">{{r.n}}</span>
+        <span style="flex: 1; text-align: left">{{r.name}}</span>
+        <span style="font-size: 15px; color: #5E6B70">{{r.kind}}</span>
+        <span style="{{r.dot}}"></span>
+      </button>
+    </sc-for>
+  </div>
+
+  <footer style="position: absolute; left: 56px; right: 56px; bottom: 40px; display: flex; gap: 36px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #5E6B70">
+    <span><span style="color: #1E2A30">↵</span> open</span>
+    <span><span style="color: #1E2A30">1–9</span> jump</span>
+    <span><span style="color: #1E2A30">&gt;</span> shell command</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3F6E7C","options":["#3F6E7C","#C7794E","#5F7F68","#1E2A30"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#3F6E7C';
+    const rows = [
+      { name: 'Build and boot kernel', kind: 'command', sel: true },
+      { name: 'kernel', kind: 'folder' },
+      { name: 'kernel-notes.md', kind: 'document' },
+      { name: 'Kernel and performance', kind: 'setting' },
+      { name: 'Kernel Debugger', kind: 'windows app' }
+    ].map((r, i) => ({
+      ...r,
+      n: '0' + (i + 1),
+      style: 'display: flex; align-items: center; gap: 24px; padding: 22px 0; border: 0; border-bottom: 1px solid #D3DADA; background: transparent; font-size: 30px; font-weight: ' + (r.sel ? '400' : '300') + '; color: ' + (r.sel ? '#1E2A30' : '#46545A') + '; animation: dante-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) ' + (0.08 * i).toFixed(2) + 's both',
+      dot: 'width: 9px; height: 9px; border-radius: 99px; background: ' + (r.sel ? accent : 'transparent')
+    }));
+    return { accent, rows };
+  }
+}
+</script>
+</body>
+</html>

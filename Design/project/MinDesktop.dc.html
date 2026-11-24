@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dante First Light: desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;500&amp;family=IBM+Plex+Mono:wght@300;400&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#3F6E7C}a:hover{color:#2C5260}
+@keyframes dante-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes dante-breathe{0%,100%{opacity:0.7}50%{opacity:0.95}}
+@keyframes dante-drift{0%,100%{transform:translateX(0)}50%{transform:translateX(22px)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: linear-gradient(180deg, #F4E7DC 0%, #ECEDEA 42%, #E3E9EA 62%); color: #1E2A30; font-family: 'Inter Tight', sans-serif; font-weight: 300">
+
+  <!-- Wallpaper: the sea at first light, drawn like a technical drawing -->
+  <svg aria-hidden="true" width="1440" height="900" viewBox="0 0 1440 900" style="position: absolute; inset: 0">
+    <circle cx="1200" cy="600" r="74" fill="#F2CFB4" style="animation: dante-breathe 9s ease-in-out infinite"></circle>
+    <rect x="0" y="600" width="1440" height="300" fill="#C7D5D8"></rect>
+    <rect x="0" y="600" width="1440" height="300" fill="url(#seaFade)"></rect>
+    <defs><linearGradient id="seaFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D3DEE0"></stop><stop offset="1" stop-color="#AFC3C9"></stop></linearGradient></defs>
+    <line x1="0" y1="600" x2="1440" y2="600" stroke="#7F969D" stroke-width="1"></line>
+    <g stroke="#7F969D" stroke-width="1">
+      <line x1="1160" y1="606" x2="1160" y2="614"></line><line x1="1200" y1="606" x2="1200" y2="618"></line><line x1="1240" y1="606" x2="1240" y2="614"></line>
+      <line x1="1280" y1="606" x2="1280" y2="614"></line><line x1="1320" y1="606" x2="1320" y2="614"></line><line x1="1360" y1="606" x2="1360" y2="614"></line><line x1="1400" y1="606" x2="1400" y2="614"></line>
+    </g>
+    <g stroke="#7F969D" stroke-width="1" fill="none">
+      <line x1="1126" y1="500" x2="1274" y2="500"></line><line x1="1126" y1="494" x2="1126" y2="506"></line><line x1="1274" y1="494" x2="1274" y2="506"></line>
+      <path d="M1160 440 C 1240 380, 1330 300, 1400 210" stroke-dasharray="2 6"></path>
+    </g>
+    <text x="1200" y="490" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5E6B70">Ø 148 · 06:12</text>
+    <path d="M-9 -5 l14 -4 l-4 6 l8 4 l-10 -1 l-6 7 z" fill="#3F6E7C">
+      <animateMotion dur="48s" repeatCount="indefinite" rotate="auto" keyTimes="0;1" keySplines="0.4 0 0.6 1" calcMode="spline" path="M1160 440 C 1240 380, 1330 300, 1400 210"></animateMotion>
+    </path>
+    <g stroke="#9DB2B8" stroke-width="1" style="animation: dante-drift 16s ease-in-out infinite"><line x1="80" y1="680" x2="200" y2="680"></line><line x1="300" y1="720" x2="380" y2="720"></line><line x1="520" y1="660" x2="600" y2="660"></line></g>
+  </svg>
+
+  <header style="position: absolute; top: 30px; left: 56px; right: 56px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 1px; color: #5E6B70">
+    <span style="color: #1E2A30">DANTE</span>
+    <span style="text-align: center"><span style="color: #1E2A30">work</span>   code   home</span>
+    <span style="text-align: right">06:12 · sunrise</span>
+  </header>
+
+  <!-- Files -->
+  <section aria-label="Files" style="position: absolute; left: 56px; top: 80px; width: 640px; height: 700px; border: 1px solid #C9D1D2; border-radius: 10px; background: rgba(247,248,246,0.94); padding: 30px 34px; box-sizing: border-box; display: flex; flex-direction: column; animation: dante-rise 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both">
+    <span style="position: absolute; left: -5px; top: -5px; width: 9px; height: 9px; border-left: 1px solid #7F969D; border-top: 1px solid #7F969D"></span>
+    <span style="position: absolute; right: -5px; bottom: -5px; width: 9px; height: 9px; border-right: 1px solid #7F969D; border-bottom: 1px solid #7F969D"></span>
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #5E6B70">01 — files / dante-os</span>
+    <span style="margin-top: 26px; font-weight: 200; font-size: 54px; letter-spacing: -2px; line-height: 1">dante-os</span>
+    <div style="margin-top: 36px; display: flex; flex-direction: column">
+      <sc-for list="{{files}}" as="f" hint-placeholder-count="6">
+        <div style="display: flex; align-items: center; gap: 14px; padding: 15px 0; border-top: 1px solid #DCE2E2; font-size: 17px">
+          <span style="{{f.dot}}"></span>
+          <span style="flex: 1">{{f.name}}</span>
+          <span style="color: #5E6B70; font-size: 14px">{{f.meta}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- Terminal -->
+  <section aria-label="Terminal" style="position: absolute; left: 720px; top: 80px; width: 400px; height: 380px; border: 1px solid #C9D1D2; border-radius: 10px; background: rgba(247,248,246,0.94); padding: 30px; box-sizing: border-box; animation: dante-rise 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.18s both">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #5E6B70">02 — terminal / ~/kernel</span>
+    <pre style="margin: 24px 0 0; font-family: 'IBM Plex Mono', monospace; font-weight: 300; font-size: 13px; line-height: 1.9; color: #2E3B41; white-space: pre-wrap">❯ ./run.sh
+Dante kernel 0.1.0 starting
+cpu: 4 cores online
+<span style="color: {{accent}}; font-weight: 400">Dante kernel ready</span>
+❯ <span style="background: #1E2A30"> </span></pre>
+  </section>
+
+  <!-- Command line, resting on the water -->
+  <div style="position: absolute; left: 56px; right: 56px; bottom: 40px; display: flex; align-items: center; gap: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: #1E2A30">
+    <span style="width: 9px; height: 9px; border-radius: 99px; background: {{accent}}"></span>
+    <span>type anything</span>
+    <span style="flex: 1"></span>
+    <span style="font-size: 12px">2 open · tide rising</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3F6E7C","options":["#3F6E7C","#C7794E","#5F7F68","#1E2A30"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#3F6E7C';
+    const files = [
+      { name: 'kernel', meta: 'today', sel: true },
+      { name: 'compositor', meta: 'yesterday' },
+      { name: 'win32-compat', meta: '21 nov' },
+      { name: 'Roadmap.md', meta: '20 nov' },
+      { name: 'Budget 2027.xlsx', meta: 'windows · 14 nov' },
+      { name: 'Notes.txt', meta: '12 nov' }
+    ].map((f) => ({ ...f, dot: 'width: 7px; height: 7px; border-radius: 99px; background: ' + (f.sel ? accent : 'transparent') }));
+    return { accent, files };
+  }
+}
+</script>
+</body>
+</html>

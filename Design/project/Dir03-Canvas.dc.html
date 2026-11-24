@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction 3: Canvas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#2B59FF}a:hover{color:#1A3FC4}
+button{font:inherit;color:inherit}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background-color: #EEF0EC; background-image: radial-gradient(#C9CDC4 1.2px, transparent 1.2px); background-size: 28px 28px; color: #14161A; font-family: Inter, sans-serif; font-size: 13px">
+
+  <!-- Cluster: Kernel work -->
+  <div style="position: absolute; left: 120px; top: 120px; width: 660px; height: 430px; border-radius: 36px; border: 1.5px dashed #9EA6B8"></div>
+  <span style="position: absolute; left: 148px; top: 100px; padding: 6px 14px; border-radius: 999px; background: #2B59FF; color: #FFFFFF; font-weight: 600">Kernel work</span>
+  <div style="position: absolute; left: 150px; top: 150px; width: 340px; height: 230px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 12px 30px rgba(20,22,26,0.1); padding: 18px; box-sizing: border-box">
+    <span style="font-weight: 700">main.rs</span>
+    <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px">
+      <div style="height: 8px; width: 80%; border-radius: 4px; background: #DDE3F5"></div>
+      <div style="height: 8px; width: 60%; border-radius: 4px; background: #E6E8E4"></div>
+      <div style="height: 8px; width: 72%; border-radius: 4px; background: #E6E8E4"></div>
+      <div style="height: 8px; width: 40%; border-radius: 4px; background: #DDE3F5"></div>
+    </div>
+  </div>
+  <div style="position: absolute; left: 510px; top: 150px; width: 240px; height: 160px; border-radius: 18px; background: #14161A; color: #C7F0D8; box-shadow: 0 12px 30px rgba(20,22,26,0.16); padding: 16px; box-sizing: border-box; font-family: monospace; font-size: 12px; line-height: 1.7">❯ ./run.sh<br>kernel ready</div>
+  <div style="position: absolute; left: 510px; top: 330px; width: 240px; height: 190px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 12px 30px rgba(20,22,26,0.1); padding: 16px; box-sizing: border-box"><span style="font-weight: 700">QEMU</span><div style="margin-top: 12px; height: 120px; border-radius: 10px; background: #050408"></div></div>
+  <div style="position: absolute; left: 150px; top: 400px; width: 340px; height: 120px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 12px 30px rgba(20,22,26,0.1); padding: 18px; box-sizing: border-box"><span style="font-weight: 700">Roadmap</span><div style="margin-top: 10px; color: #4A4F59">Interrupts → memory → processes</div></div>
+
+  <!-- Cluster: Life -->
+  <div style="position: absolute; left: 880px; top: 220px; width: 420px; height: 330px; border-radius: 36px; border: 1.5px dashed #9EA6B8"></div>
+  <span style="position: absolute; left: 908px; top: 200px; padding: 6px 14px; border-radius: 999px; background: #14161A; color: #FFFFFF; font-weight: 600">Life</span>
+  <div style="position: absolute; left: 910px; top: 250px; width: 180px; height: 130px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 12px 30px rgba(20,22,26,0.1); padding: 16px; box-sizing: border-box; font-weight: 700">Mail</div>
+  <div style="position: absolute; left: 1100px; top: 250px; width: 170px; height: 270px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 12px 30px rgba(20,22,26,0.1); padding: 16px; box-sizing: border-box; font-weight: 700">Calendar</div>
+  <div style="position: absolute; left: 910px; top: 395px; width: 180px; height: 125px; border-radius: 18px; background: #FFF3DD; box-shadow: 0 12px 30px rgba(20,22,26,0.1); padding: 16px; box-sizing: border-box; font-weight: 700">Spreadsheet<div style="font-weight: 500; color: #8A5A12; margin-top: 4px">Windows app</div></div>
+
+  <!-- Cluster: Later -->
+  <span style="position: absolute; left: 160px; top: 640px; padding: 6px 14px; border-radius: 999px; background: #FFFFFF; border: 1px solid #C9CDC4; font-weight: 600; color: #4A4F59">Later · 3 windows parked</span>
+
+  <!-- Controls -->
+  <div style="position: absolute; left: 24px; top: 24px; display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 6px 20px rgba(20,22,26,0.08); font-weight: 700">DANTE <span style="font-weight: 500; color: #4A4F59">· your canvas</span></div>
+  <div style="position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; background: #14161A; color: #FFFFFF">
+    <button style="height: 40px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent">−</button>
+    <span style="font-weight: 600">38%</span>
+    <button style="height: 40px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent">+</button>
+    <button style="height: 40px; padding: 0 18px; border: 0; border-radius: 999px; background: #2B59FF; font-weight: 600">New space</button>
+  </div>
+  <div aria-label="Minimap" style="position: absolute; right: 24px; bottom: 24px; width: 200px; height: 130px; border-radius: 16px; background: #FFFFFF; box-shadow: 0 6px 20px rgba(20,22,26,0.1)">
+    <div style="position: absolute; left: 20px; top: 24px; width: 90px; height: 58px; border-radius: 8px; background: #DDE3F5"></div>
+    <div style="position: absolute; left: 124px; top: 38px; width: 56px; height: 44px; border-radius: 8px; background: #E6E8E4"></div>
+    <div style="position: absolute; left: 12px; top: 14px; width: 176px; height: 90px; border-radius: 10px; border: 2px solid #2B59FF"></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dante OS command launcher</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&amp;family=Inter+Tight:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#C8FF2E}a:hover{color:#E2FF8A}
+button,input{font:inherit;color:inherit}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #08070D; color: #F5F3FF; font-family: 'Inter Tight', system-ui, sans-serif; font-size: 14px">
+
+  <svg aria-hidden="true" width="1440" height="900" viewBox="0 0 1440 900" style="position: absolute; inset: 0">
+    <defs><filter id="melt" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="110"></feGaussianBlur></filter></defs>
+    <g filter="url(#melt)">
+      <ellipse cx="1120" cy="180" rx="420" ry="300" fill="#6D2BFF"></ellipse>
+      <ellipse cx="820" cy="760" rx="460" ry="260" fill="#FF3D7F"></ellipse>
+      <ellipse cx="1380" cy="700" rx="260" ry="240" fill="#FF8A1F"></ellipse>
+      <ellipse cx="180" cy="900" rx="320" ry="200" fill="#1FD1FF" opacity="0.55"></ellipse>
+    </g>
+  </svg>
+  <div style="position: absolute; inset: 0; background: rgba(8,7,13,0.55); backdrop-filter: blur(20px)"></div>
+
+  <div role="dialog" aria-label="Command launcher" style="position: absolute; left: 50%; top: 120px; transform: translateX(-50%); width: 900px; display: flex; flex-direction: column; gap: 28px">
+
+    <label style="display: flex; align-items: center; gap: 18px; padding: 0 8px; border-bottom: 2px solid rgba(255,255,255,0.18); height: 96px">
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search apps, files and commands</span>
+      <input value="kern" style="flex: 1; min-width: 0; background: transparent; border: 0; outline: none; font-family: Unbounded, sans-serif; font-weight: 600; font-size: 56px; letter-spacing: -1.5px; caret-color: #C8FF2E">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 6px 10px; border-radius: 10px; background: rgba(255,255,255,0.1); color: rgba(245,243,255,0.75)">esc</span>
+    </label>
+
+    <!-- Top hits as big cards -->
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px">
+      <button style="text-align: left; border: 0; border-radius: 28px; padding: 24px; background: #C8FF2E; color: #08070D; display: flex; flex-direction: column; gap: 22px; min-height: 200px">
+        <span style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase">Top hit · Command</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 4px 9px; border-radius: 9px; background: rgba(8,7,13,0.12)">↵</span>
+        </span>
+        <span style="flex: 1"></span>
+        <span style="font-family: Unbounded, sans-serif; font-weight: 800; font-size: 30px; line-height: 1.05; letter-spacing: -0.5px">Build &amp; boot kernel</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px">~/dante-os › ./run.sh</span>
+      </button>
+      <button style="text-align: left; border: 1px solid rgba(255,255,255,0.14); border-radius: 28px; padding: 24px; background: rgba(16,14,26,0.6); display: flex; flex-direction: column; gap: 14px">
+        <span style="width: 52px; height: 52px; border-radius: 17px; background: linear-gradient(150deg,#6D2BFF,#9B6BFF); display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></span>
+        <span style="flex: 1"></span>
+        <span style="font-weight: 700; font-size: 18px">kernel</span>
+        <span style="color: rgba(245,243,255,0.66)">Folder · Projects</span>
+      </button>
+      <button style="text-align: left; border: 1px solid rgba(255,181,74,0.35); border-radius: 28px; padding: 24px; background: rgba(255,181,74,0.1); display: flex; flex-direction: column; gap: 14px">
+        <span style="width: 52px; height: 52px; border-radius: 17px; background: rgba(255,181,74,0.22); color: #FFB54A; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg></span>
+        <span style="flex: 1"></span>
+        <span style="font-weight: 700; font-size: 18px">Kernel Debugger</span>
+        <span style="color: #FFCF85">Windows app · native</span>
+      </button>
+    </div>
+
+    <!-- More results -->
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(245,243,255,0.6); padding: 0 12px 6px">More</span>
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+        <button style="display: flex; align-items: center; gap: 16px; padding: 12px; border: 0; border-radius: 16px; background: transparent; text-align: left">
+          <span style="{{r.icon}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{r.d}}"></path></svg></span>
+          <span style="flex: 1; font-weight: 600; font-size: 15px">{{r.name}}</span>
+          <span style="color: rgba(245,243,255,0.6)">{{r.sub}}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; gap: 22px; color: rgba(245,243,255,0.66); padding: 0 12px">
+      <span><span style="font-family: 'JetBrains Mono', monospace; color: #F5F3FF">tab</span> actions</span>
+      <span><span style="font-family: 'JetBrains Mono', monospace; color: #F5F3FF">&gt;</span> run as shell command</span>
+      <span><span style="font-family: 'JetBrains Mono', monospace; color: #F5F3FF">=</span> calculate</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const icon = (bg, fg) => 'width: 40px; height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center; background: ' + bg + '; color: ' + fg;
+    const rows = [
+      { name: 'kernel-notes.md', sub: 'Documents', d: 'M6 3h9l4 4v14H6z M9 12h7 M9 16h5', bg: 'rgba(255,255,255,0.1)', fg: '#F5F3FF' },
+      { name: 'Kernel & performance', sub: 'Settings', d: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z M12 2v3 M12 19v3 M2 12h3 M19 12h3', bg: 'rgba(255,255,255,0.1)', fg: '#F5F3FF' },
+      { name: 'Kernel design review', sub: 'Calendar · 16:30', d: 'M4 6h16v14H4z M4 10h16 M8 3v5 M16 3v5', bg: 'rgba(255,61,127,0.18)', fg: '#FF7AA8' }
+    ].map((r) => ({ ...r, icon: icon(r.bg, r.fg) }));
+    return { rows };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dante OS permission request</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&amp;family=Inter+Tight:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#C8FF2E}a:hover{color:#E2FF8A}
+button{font:inherit;color:inherit}
+</style>
+</helmet>
+<div style="width: 880px; height: 640px; position: relative; overflow: hidden; background: #08070D; color: #F5F3FF; font-family: 'Inter Tight', system-ui, sans-serif; font-size: 14px; display: flex; align-items: center; justify-content: center">
+  <svg aria-hidden="true" width="880" height="640" viewBox="0 0 880 640" style="position: absolute; inset: 0">
+    <defs><filter id="melt" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="80"></feGaussianBlur></filter></defs>
+    <g filter="url(#melt)">
+      <ellipse cx="160" cy="120" rx="260" ry="200" fill="#FF8A1F"></ellipse>
+      <ellipse cx="760" cy="560" rx="300" ry="220" fill="#6D2BFF"></ellipse>
+    </g>
+  </svg>
+
+  <div role="dialog" aria-label="Permission request" style="position: relative; width: 560px; border-radius: 34px; background: rgba(16,14,26,0.7); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.16); box-shadow: 0 50px 100px rgba(0,0,0,0.55); padding: 34px; box-sizing: border-box; display: flex; flex-direction: column; gap: 26px">
+
+    <div style="display: flex; align-items: center; gap: 14px">
+      <span style="width: 72px; height: 72px; border-radius: 24px; background: linear-gradient(140deg,#FFB54A,#FF8A1F); color: #2A1600; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M4 10h16M4 15h16M10 4v16"></path></svg></span>
+      <svg aria-hidden="true" width="64" height="16" viewBox="0 0 64 16" fill="none" stroke="rgba(245,243,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 6"><path d="M4 8h52"></path><path d="M52 3l6 5-6 5" stroke-dasharray="none"></path></svg>
+      <span style="width: 72px; height: 72px; border-radius: 24px; background: linear-gradient(140deg,#1FD1FF,#2B6BFF); color: #fff; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <span style="font-family: Unbounded, sans-serif; font-weight: 800; font-size: 30px; line-height: 1.1; letter-spacing: -0.5px">Let Spreadsheet into <span style="color: #1FD1FF">Finance</span>?</span>
+      <span style="color: rgba(245,243,255,0.75); font-size: 16px; line-height: 1.5">Apps on Dante start with nothing. Spreadsheet will only see Documents › Finance, and you can take it back any time.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <button style="height: 56px; border: 0; border-radius: 18px; background: #C8FF2E; color: #08070D; font-weight: 700; font-size: 16px">Allow always</button>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <button style="height: 52px; border: 0; border-radius: 18px; background: rgba(255,255,255,0.1); font-weight: 600; font-size: 15px">Just this once</button>
+        <button style="height: 52px; border: 0; border-radius: 18px; background: transparent; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); font-weight: 600; font-size: 15px">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":880,"height":640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

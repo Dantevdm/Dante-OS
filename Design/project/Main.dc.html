@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dante OS desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&amp;family=Inter+Tight:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#C8FF2E}a:hover{color:#E2FF8A}
+button{font:inherit;color:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #08070D; color: #F5F3FF; font-family: 'Inter Tight', system-ui, sans-serif; font-size: 14px">
+
+  <!-- Wallpaper: molten light -->
+  <svg aria-hidden="true" width="1440" height="900" viewBox="0 0 1440 900" style="position: absolute; inset: 0">
+    <defs>
+      <filter id="melt" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="90"></feGaussianBlur></filter>
+      <pattern id="grain" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#ffffff" opacity="0.035"></rect></pattern>
+    </defs>
+    <g filter="url(#melt)">
+      <ellipse cx="1120" cy="180" rx="420" ry="300" fill="{{hueA}}"></ellipse>
+      <ellipse cx="820" cy="760" rx="460" ry="260" fill="{{hueB}}"></ellipse>
+      <ellipse cx="1380" cy="700" rx="260" ry="240" fill="#FF8A1F"></ellipse>
+      <ellipse cx="180" cy="900" rx="320" ry="200" fill="#1FD1FF" opacity="0.55"></ellipse>
+    </g>
+    <rect width="1440" height="900" fill="url(#grain)"></rect>
+  </svg>
+
+  <!-- Floating top pills -->
+  <div style="position: absolute; top: 18px; left: 24px; display: flex; align-items: center; gap: 4px; padding: 5px; border-radius: 999px; background: rgba(14,12,22,0.5); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12)">
+    <span style="width: 32px; height: 32px; border-radius: 999px; background: #C8FF2E; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24"><path d="M5 3h7a9 9 0 0 1 0 18H5z" fill="none" stroke="#08070D" stroke-width="2.6"></path><path d="M9 8h3a4 4 0 0 1 0 8H9z" fill="#08070D"></path></svg>
+    </span>
+    <button style="height: 32px; padding: 0 16px; border: 0; border-radius: 999px; background: rgba(255,255,255,0.14); font-weight: 600">Work</button>
+    <button style="height: 32px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: rgba(245,243,255,0.72)">Code</button>
+    <button style="height: 32px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: rgba(245,243,255,0.72)">Play</button>
+  </div>
+  <div style="position: absolute; top: 18px; right: 24px; display: flex; align-items: center; gap: 14px; height: 42px; padding: 0 18px; border-radius: 999px; background: rgba(14,12,22,0.5); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12); font-weight: 500">
+    <svg role="img" aria-label="Wi-Fi connected" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 9a15 15 0 0 1 20 0"></path><path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path></svg>
+    <span>86%</span>
+    <span style="width: 1px; height: 16px; background: rgba(255,255,255,0.2)"></span>
+    <span>Mon 23 Nov</span>
+  </div>
+
+  <!-- Clock -->
+  <div style="position: absolute; left: 56px; top: 108px; display: flex; flex-direction: column; gap: 6px">
+    <span style="font-family: Unbounded, sans-serif; font-weight: 800; font-size: 156px; line-height: 0.95; letter-spacing: -6px">15:42</span>
+    <span style="font-family: Unbounded, sans-serif; font-weight: 400; font-size: 22px; color: rgba(245,243,255,0.8); padding-left: 6px">Monday, 23 November</span>
+  </div>
+
+  <!-- Widgets -->
+  <div style="position: absolute; left: 56px; top: 400px; width: 540px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+    <div style="grid-column: span 2; border-radius: 26px; padding: 20px 22px; background: rgba(14,12,22,0.5); backdrop-filter: blur(28px); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; gap: 18px">
+      <span style="width: 56px; height: 56px; border-radius: 18px; background: #C8FF2E; color: #08070D; display: flex; align-items: center; justify-content: center">
+        <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"></path></svg>
+      </span>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <span style="font-weight: 700; font-size: 16px">Kernel is flying</span>
+        <span style="color: rgba(245,243,255,0.7)">8 cores · booted in [BOOT]s</span>
+      </div>
+      <div style="display: flex; align-items: flex-end; gap: 5px; height: 44px">
+        <sc-for list="{{cores}}" as="c" hint-placeholder-count="8">
+          <span style="{{c.style}}"></span>
+        </sc-for>
+      </div>
+    </div>
+    <div style="border-radius: 26px; padding: 20px 22px; background: rgba(14,12,22,0.5); backdrop-filter: blur(28px); border: 1px solid rgba(255,255,255,0.12); display: flex; flex-direction: column; gap: 10px; min-height: 150px; box-sizing: border-box">
+      <span style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #FF7AA8">Up next</span>
+      <span style="font-family: Unbounded, sans-serif; font-weight: 600; font-size: 20px; line-height: 1.2">Kernel design review</span>
+      <span style="color: rgba(245,243,255,0.7)">16:30 · 45 min</span>
+    </div>
+    <div style="border-radius: 26px; padding: 20px 22px; background: linear-gradient(140deg, #6D2BFF, #FF3D7F); display: flex; flex-direction: column; justify-content: space-between; min-height: 150px; box-sizing: border-box">
+      <span style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.85)">Now playing</span>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-weight: 700; font-size: 17px">[TRACK]</span>
+        <span style="color: rgba(255,255,255,0.85)">[ARTIST]</span>
+      </div>
+      <div style="height: 4px; border-radius: 4px; background: rgba(255,255,255,0.3)"><div style="width: 38%; height: 100%; border-radius: 4px; background: #FFFFFF"></div></div>
+    </div>
+  </div>
+
+  <!-- Files window -->
+  <section aria-label="Files window" style="position: absolute; left: 660px; top: 86px; width: 720px; height: 470px; border-radius: 28px; background: rgba(16,14,26,0.62); backdrop-filter: blur(36px); border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 40px 80px rgba(0,0,0,0.45); overflow: hidden">
+    <div style="height: 60px; display: flex; align-items: center; gap: 12px; padding: 0 16px 0 24px">
+      <span style="font-family: Unbounded, sans-serif; font-weight: 600; font-size: 18px">Projects</span>
+      <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(200,255,46,0.14); color: #C8FF2E">Home only</span>
+      <div style="flex: 1"></div>
+      <button aria-label="Search" style="width: 36px; height: 36px; border: 0; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg></button>
+      <button aria-label="Close" style="width: 36px; height: 36px; border: 0; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+    </div>
+    <div style="padding: 6px 24px 24px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px">
+      <sc-for list="{{folders}}" as="f" hint-placeholder-count="8">
+        <div style="{{f.card}}">
+          <span style="{{f.icon}}">
+            <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="{{f.d}}"></path></svg>
+          </span>
+          <span style="font-weight: 600">{{f.name}}</span>
+          <span style="font-size: 12px; color: rgba(245,243,255,0.62)">{{f.meta}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- Terminal window, in front -->
+  <section aria-label="Terminal window" style="position: absolute; left: 610px; top: 488px; width: 560px; height: 276px; border-radius: 24px; background: rgba(6,5,10,0.82); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 40px 90px rgba(0,0,0,0.6); overflow: hidden">
+    <div style="height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.08)">
+      <span style="width: 8px; height: 8px; border-radius: 99px; background: #C8FF2E"></span>
+      <span style="font-weight: 600">Terminal</span>
+      <span style="color: rgba(245,243,255,0.62)">~/kernel</span>
+    </div>
+    <pre style="margin: 0; padding: 14px 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.75; color: #D9D6E8; white-space: pre-wrap"><span style="color: #C8FF2E">❯</span> ./run.sh
+==&gt; Building kernel
+==&gt; Booting Dante OS
+Dante kernel 0.1.0 starting
+cpu: 8 cores online
+<span style="color: #C8FF2E">Dante kernel ready</span>
+<span style="color: #C8FF2E">❯</span> <span style="background: #C8FF2E; color: #08070D"> </span></pre>
+  </section>
+
+  <!-- Dock -->
+  <nav aria-label="Dock" style="position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 30px; background: rgba(14,12,22,0.55); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 20px 50px rgba(0,0,0,0.4)">
+    <sc-for list="{{dock}}" as="d" hint-placeholder-count="9">
+      <button aria-label="{{d.name}}" style="position: relative; width: 56px; height: 56px; border: 0; padding: 0; background: transparent">
+        <span style="{{d.tile}}">
+          <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{d.d}}"></path></svg>
+        </span>
+        <span style="{{d.dot}}"></span>
+      </button>
+    </sc-for>
+    <span style="width: 1px; height: 40px; background: rgba(255,255,255,0.18); margin: 0 4px"></span>
+    <button aria-label="Windows apps" style="width: 56px; height: 56px; border: 0; border-radius: 18px; background: rgba(255,181,74,0.16); color: #FFB54A; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg>
+    </button>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"hueA":{"editor":"color","default":"#6D2BFF","options":["#6D2BFF","#1FD1FF","#FF3D7F","#00C27A"]},"hueB":{"editor":"color","default":"#FF3D7F","options":["#FF3D7F","#6D2BFF","#FF8A1F","#1FD1FF"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const hueA = this.props.hueA ?? '#6D2BFF';
+    const hueB = this.props.hueB ?? '#FF3D7F';
+    const loads = [60, 35, 90, 48, 72, 30, 84, 52];
+    const cores = loads.map((l) => ({ style: 'display: block; width: 7px; border-radius: 4px; background: #C8FF2E; height: ' + l + '%; opacity: ' + (0.5 + l / 200) }));
+    const folder = 'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z';
+    const doc = 'M6 3h9l4 4v14H6z M9 12h7 M9 16h5';
+    const card = (sel) => 'border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 6px; ' + (sel ? 'background: rgba(200,255,46,0.12); box-shadow: inset 0 0 0 1.5px #C8FF2E' : 'background: rgba(255,255,255,0.06)');
+    const icon = (bg, fg) => 'width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: ' + bg + '; color: ' + fg;
+    const folders = [
+      { name: 'dante-os', meta: 'Today', d: folder, bg: '#C8FF2E', fg: '#08070D', sel: true },
+      { name: 'kernel', meta: 'Today', d: folder, bg: 'linear-gradient(140deg,#6D2BFF,#9B6BFF)', fg: '#fff' },
+      { name: 'compositor', meta: 'Yesterday', d: folder, bg: 'linear-gradient(140deg,#FF3D7F,#FF8A1F)', fg: '#fff' },
+      { name: 'win32-compat', meta: '21 Nov', d: folder, bg: 'linear-gradient(140deg,#FFB54A,#FF8A1F)', fg: '#2A1600' },
+      { name: 'Roadmap.md', meta: 'Markdown', d: doc, bg: 'rgba(255,255,255,0.12)', fg: '#fff' },
+      { name: 'Boot.png', meta: 'Image', d: doc, bg: 'linear-gradient(140deg,#1FD1FF,#6D2BFF)', fg: '#fff' },
+      { name: 'Budget.xlsx', meta: 'Windows file', d: doc, bg: 'rgba(255,181,74,0.2)', fg: '#FFB54A' },
+      { name: 'Notes.txt', meta: 'Text', d: doc, bg: 'rgba(255,255,255,0.12)', fg: '#fff' }
+    ].map((f) => ({ ...f, card: card(f.sel), icon: icon(f.bg, f.fg) }));
+    const tile = (bg, fg) => 'width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; background: ' + bg + '; color: ' + fg + '; box-shadow: inset 0 1px 0 rgba(255,255,255,0.25)';
+    const dock = [
+      { name: 'Files', d: folder, bg: 'linear-gradient(150deg,#1FD1FF,#2B6BFF)', fg: '#fff', open: true },
+      { name: 'Terminal', d: 'M5 7l5 5-5 5 M13 17h6', bg: '#0E0D14', fg: '#C8FF2E', open: true },
+      { name: 'Browser', d: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18z M3 12h18 M12 3c3 3 3 15 0 18 M12 3c-3 3-3 15 0 18', bg: 'linear-gradient(150deg,#FF8A1F,#FF3D7F)', fg: '#fff' },
+      { name: 'Mail', d: 'M3 6h18v12H3z M3 7l9 6 9-6', bg: 'linear-gradient(150deg,#6D2BFF,#B05BFF)', fg: '#fff' },
+      { name: 'Calendar', d: 'M4 6h16v14H4z M4 10h16 M8 3v5 M16 3v5', bg: '#F5F3FF', fg: '#FF3D7F' },
+      { name: 'Notes', d: 'M6 3h9l4 4v14H6z M9 12h7 M9 16h5', bg: 'linear-gradient(150deg,#FFE14D,#FFB54A)', fg: '#2A1600' },
+      { name: 'Music', d: 'M9 18V5l11-2v13 M9 18a3 3 0 1 1-6 0a3 3 0 1 1 6 0z M20 16a3 3 0 1 1-6 0a3 3 0 1 1 6 0z', bg: 'linear-gradient(150deg,#FF3D7F,#6D2BFF)', fg: '#fff' },
+      { name: 'System', d: 'M3 12h4l3-7 4 14 3-7h4', bg: '#C8FF2E', fg: '#08070D' },
+      { name: 'Settings', d: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z M12 2v3 M12 19v3 M2 12h3 M19 12h3 M4.9 4.9L7 7 M17 17l2.1 2.1 M4.9 19.1L7 17 M17 7l2.1-2.1', bg: 'rgba(255,255,255,0.14)', fg: '#fff' }
+    ].map((d) => ({ ...d, tile: tile(d.bg, d.fg), dot: 'position: absolute; left: 50%; bottom: -7px; width: 5px; height: 5px; margin-left: -2px; border-radius: 99px; background: ' + (d.open ? '#F5F3FF' : 'transparent') }));
+    return { hueA, hueB, cores, folders, dock };
+  }
+}
+</script>
+</body>
+</html>

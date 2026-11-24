@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction 8: Timeline</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#FF6B4A}a:hover{color:#FF977E}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #121110; color: #F4F1EC; font-family: 'Space Grotesk', sans-serif">
+
+  <div style="position: absolute; top: 40px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: baseline">
+    <span style="font-weight: 700; font-size: 72px; letter-spacing: -2px">Today</span>
+    <span style="font-size: 15px; color: rgba(244,241,236,0.66)">DANTE · Mon 23 Nov</span>
+  </div>
+  <span style="position: absolute; top: 130px; left: 58px; font-size: 17px; font-weight: 300; color: rgba(244,241,236,0.7)">Everything you touched, in the order you touched it. Drag back to pick up where you left off.</span>
+
+  <!-- Axis -->
+  <div style="position: absolute; left: 56px; right: 56px; top: 520px; height: 1px; background: rgba(244,241,236,0.2)"></div>
+  <div style="position: absolute; left: 56px; right: 56px; top: 536px; display: flex; justify-content: space-between; font-size: 13px; color: rgba(244,241,236,0.6)">
+    <span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span><span>13:00</span><span>14:00</span><span>15:00</span><span style="color: #FF6B4A; font-weight: 700">Now</span>
+  </div>
+
+  <!-- Events above the line -->
+  <div style="position: absolute; left: 70px; top: 300px; width: 220px; padding: 18px; border-radius: 18px; background: #1E1C1A; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: rgba(244,241,236,0.6)">09:12 · Mail</span><span style="font-weight: 500; font-size: 17px">Inbox, 4 replied</span></div>
+  <div style="position: absolute; left: 360px; top: 250px; width: 240px; padding: 18px; border-radius: 18px; background: #1E1C1A; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: rgba(244,241,236,0.6)">10:05 · Files</span><span style="font-weight: 500; font-size: 17px">Roadmap.md</span></div>
+  <div style="position: absolute; left: 660px; top: 320px; width: 250px; padding: 18px; border-radius: 18px; background: #2A1F12; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: #E9B46A">11:40 · Windows app</span><span style="font-weight: 500; font-size: 17px">Budget 2027.xlsx</span></div>
+  <div style="position: absolute; left: 1010px; top: 230px; width: 340px; padding: 22px; border-radius: 22px; background: #FF6B4A; color: #1A0F0B; display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; font-weight: 500">15:20 → now · Terminal</span><span style="font-weight: 700; font-size: 24px; line-height: 1.15">Booting the kernel in QEMU</span><span style="font-size: 14px">~/dante-os · ./run.sh</span></div>
+
+  <!-- Stems -->
+  <div style="position: absolute; left: 180px; top: 390px; width: 1px; height: 130px; background: rgba(244,241,236,0.2)"></div>
+  <div style="position: absolute; left: 480px; top: 340px; width: 1px; height: 180px; background: rgba(244,241,236,0.2)"></div>
+  <div style="position: absolute; left: 785px; top: 410px; width: 1px; height: 110px; background: rgba(233,180,106,0.5)"></div>
+  <div style="position: absolute; left: 1384px; top: 230px; width: 2px; height: 300px; background: #FF6B4A"></div>
+  <div style="position: absolute; left: 1377px; top: 513px; width: 16px; height: 16px; border-radius: 99px; background: #FF6B4A"></div>
+
+  <!-- Later lane -->
+  <div style="position: absolute; left: 56px; right: 56px; top: 640px; display: flex; flex-direction: column; gap: 14px">
+    <span style="font-size: 13px; letter-spacing: 2px; color: rgba(244,241,236,0.6)">LATER TODAY</span>
+    <div style="display: flex; gap: 14px">
+      <div style="flex: 1; padding: 18px; border-radius: 18px; border: 1px dashed rgba(244,241,236,0.25); display: flex; justify-content: space-between"><span style="font-weight: 500">Kernel design review</span><span style="color: rgba(244,241,236,0.6)">16:30</span></div>
+      <div style="flex: 1; padding: 18px; border-radius: 18px; border: 1px dashed rgba(244,241,236,0.25); display: flex; justify-content: space-between"><span style="font-weight: 500">Write interrupt handler</span><span style="color: rgba(244,241,236,0.6)">Reminder</span></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

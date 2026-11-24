@@ -1,0 +1,40 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-11-23T15:50:00Z"},
+  "title": "Dante OS Concepts",
+  "launch": {"view": "canvas", "page": "minimal"},
+  "pages": [
+    {"id": "concepts", "name": "Round 2"},
+    {"id": "directions", "name": "10 directions"},
+    {"id": "minimal", "name": "Minimal"}
+  ],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 900, "title": "Desktop"},
+    "Launcher.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 900, "title": "Command launcher"},
+    "WindowsApp.dc.html": {"x": 0, "y": 1020, "w": 1440, "h": 900, "title": "Windows app, running natively"},
+    "Permissions.dc.html": {"x": 1520, "y": 1020, "w": 880, "h": 640, "title": "Permission request"},
+    "Boot.dc.html": {"x": 0, "y": 2040, "w": 1440, "h": 900, "title": "Boot screen"},
+    "Dir01-Orbit.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 900, "title": "01 · Orbit", "page": "directions"},
+    "Dir02-Stage.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 900, "title": "02 · Stage", "page": "directions"},
+    "Dir03-Canvas.dc.html": {"x": 3040, "y": 0, "w": 1440, "h": 900, "title": "03 · Canvas", "page": "directions"},
+    "Dir04-Monolith.dc.html": {"x": 4560, "y": 0, "w": 1440, "h": 900, "title": "04 · Monolith", "page": "directions"},
+    "Dir05-Daylight.dc.html": {"x": 6080, "y": 0, "w": 1440, "h": 900, "title": "05 · Daylight", "page": "directions"},
+    "Dir06-Strata.dc.html": {"x": 0, "y": 1020, "w": 1440, "h": 900, "title": "06 · Strata", "page": "directions"},
+    "Dir07-Lens.dc.html": {"x": 1520, "y": 1020, "w": 1440, "h": 900, "title": "07 · Lens", "page": "directions"},
+    "Dir08-Timeline.dc.html": {"x": 3040, "y": 1020, "w": 1440, "h": 900, "title": "08 · Timeline", "page": "directions"},
+    "Dir09-Dusk.dc.html": {"x": 4560, "y": 1020, "w": 1440, "h": 900, "title": "09 · Dusk", "page": "directions"},
+    "Dir10-Signal.dc.html": {"x": 6080, "y": 1020, "w": 1440, "h": 900, "title": "10 · Signal", "page": "directions"},
+    "MinDesktop.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 900, "title": "Desktop", "page": "minimal"},
+    "MinLauncher.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 900, "title": "Launcher", "page": "minimal"},
+    "MinWindowsApp.dc.html": {"x": 0, "y": 1020, "w": 1440, "h": 900, "title": "Windows app", "page": "minimal"},
+    "MinPermission.dc.html": {"x": 1520, "y": 1020, "w": 880, "h": 640, "title": "Permission", "page": "minimal"},
+    "MinBoot.dc.html": {"x": 2480, "y": 1020, "w": 1440, "h": 900, "title": "Boot", "page": "minimal"}
+  },
+  "order": ["Main.dc.html", "Launcher.dc.html", "WindowsApp.dc.html", "Permissions.dc.html", "Boot.dc.html", "Dir01-Orbit.dc.html", "Dir02-Stage.dc.html", "Dir03-Canvas.dc.html", "Dir04-Monolith.dc.html", "Dir05-Daylight.dc.html", "Dir06-Strata.dc.html", "Dir07-Lens.dc.html", "Dir08-Timeline.dc.html", "Dir09-Dusk.dc.html", "Dir10-Signal.dc.html", "MinDesktop.dc.html", "MinLauncher.dc.html", "MinWindowsApp.dc.html", "MinPermission.dc.html", "MinBoot.dc.html"],
+  "notes": {
+    "title": {"x": 0, "y": -300, "text": "Dante OS — desktop concepts", "kind": "title1", "maxW": 2960},
+    "dirtitle": {"x": 0, "y": -300, "text": "Dante OS — 10 directions", "kind": "title1", "maxW": 7520, "page": "directions"},
+    "mintitle": {"x": 0, "y": -300, "text": "Dante OS — Minimal", "kind": "title1", "maxW": 3920, "page": "minimal"}
+  },
+  "designSystems": []
+}

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction 7: Lens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#C9B8FF}a:hover{color:#E2D8FF}
+button{font:inherit;color:inherit}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: #0D0D10; color: #F2F0F7; font-family: Syne, sans-serif">
+
+  <div style="position: absolute; top: 36px; left: 48px; font-weight: 800; font-size: 14px; letter-spacing: 4px">DANTE</div>
+  <div style="position: absolute; top: 36px; right: 48px; font-size: 14px; color: rgba(242,240,247,0.66)">15:42</div>
+
+  <!-- Iridescent ring -->
+  <div style="position: absolute; left: 50%; top: 50%; width: 620px; height: 620px; margin: -310px 0 0 -310px; border-radius: 50%; background: conic-gradient(from 200deg, #C9B8FF, #8FE3E0, #FFC9A8, #C9B8FF); padding: 2px; box-sizing: border-box; opacity: 0.9">
+    <div style="width: 100%; height: 100%; border-radius: 50%; background: #0D0D10"></div>
+  </div>
+  <div style="position: absolute; left: 50%; top: 50%; width: 760px; height: 760px; margin: -380px 0 0 -380px; border-radius: 50%; border: 1px solid rgba(242,240,247,0.08)"></div>
+
+  <!-- Center lens: what's in focus -->
+  <div style="position: absolute; left: 50%; top: 50%; width: 400px; height: 400px; margin: -200px 0 0 -200px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #23212C, #141319); box-shadow: 0 40px 100px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center">
+    <span style="font-size: 13px; letter-spacing: 3px; color: #C9B8FF">IN FOCUS</span>
+    <span style="font-weight: 800; font-size: 40px; line-height: 1.05">Kernel<br>roadmap</span>
+    <span style="font-size: 15px; color: rgba(242,240,247,0.7)">Notes · edited 2 min ago</span>
+  </div>
+
+  <!-- Apps around the ring -->
+  <button aria-label="Files" style="position: absolute; left: 696px; top: 116px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #C9B8FF"></button>
+  <button aria-label="Terminal" style="position: absolute; left: 915px; top: 207px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #F2F0F7"></button>
+  <button aria-label="Mail" style="position: absolute; left: 1004px; top: 426px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #8FE3E0"></button>
+  <button aria-label="Calendar" style="position: absolute; left: 915px; top: 645px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #2A2833"></button>
+  <button aria-label="Music" style="position: absolute; left: 696px; top: 736px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #FFC9A8"></button>
+  <button aria-label="Spreadsheet, Windows app" style="position: absolute; left: 477px; top: 645px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #E9B46A"></button>
+  <button aria-label="Browser" style="position: absolute; left: 386px; top: 426px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #2A2833"></button>
+  <button aria-label="Settings" style="position: absolute; left: 477px; top: 207px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #2A2833"></button>
+
+  <span style="position: absolute; left: 760px; top: 128px; font-size: 14px">Files</span>
+  <span style="position: absolute; left: 979px; top: 219px; font-size: 14px">Terminal</span>
+  <span style="position: absolute; left: 1068px; top: 438px; font-size: 14px">Mail</span>
+  <span style="position: absolute; left: 365px; top: 657px; font-size: 14px; color: #E9B46A">Spreadsheet</span>
+
+  <div style="position: absolute; left: 48px; bottom: 40px; max-width: 360px; font-size: 15px; line-height: 1.6; color: rgba(242,240,247,0.66)">Turn the ring to switch apps. Whatever sits in the lens gets the whole machine.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

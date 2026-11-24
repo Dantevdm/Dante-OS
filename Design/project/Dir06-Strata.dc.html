@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction 6: Strata</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5EF2C9}a:hover{color:#A4F8E0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; position: relative; overflow: hidden; background: radial-gradient(90% 70% at 60% 50%, #0B3436 0%, #041819 70%); color: #E6FFF8; font-family: Outfit, sans-serif">
+
+  <div style="position: absolute; top: 40px; left: 56px; display: flex; flex-direction: column; gap: 10px; width: 420px">
+    <span style="font-weight: 700; letter-spacing: 5px; font-size: 13px; color: #5EF2C9">DANTE · STRATA</span>
+    <span style="font-weight: 300; font-size: 54px; line-height: 1.05">Your work, in layers.</span>
+    <span style="font-weight: 300; font-size: 17px; line-height: 1.6; color: rgba(230,255,248,0.72)">Each app is a sheet of glass. Tilt the stack to see everything at once, or scroll back through earlier layers in time.</span>
+  </div>
+
+  <!-- Stack of sheets -->
+  <div style="position: absolute; left: 520px; top: 60px; width: 860px; height: 780px; perspective: 2000px">
+    <div style="position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateX(55deg) rotateZ(-38deg) translate(40px, -40px)">
+      <div style="position: absolute; left: 120px; top: 140px; width: 560px; height: 380px; border-radius: 26px; background: rgba(94,242,201,0.05); border: 1px solid rgba(94,242,201,0.2); transform: translateZ(0px)"></div>
+      <div style="position: absolute; left: 120px; top: 140px; width: 560px; height: 380px; border-radius: 26px; background: rgba(94,242,201,0.07); border: 1px solid rgba(94,242,201,0.26); transform: translateZ(90px); padding: 24px; box-sizing: border-box; font-size: 20px; color: rgba(230,255,248,0.6)">Mail</div>
+      <div style="position: absolute; left: 120px; top: 140px; width: 560px; height: 380px; border-radius: 26px; background: rgba(94,242,201,0.09); border: 1px solid rgba(94,242,201,0.32); transform: translateZ(180px); padding: 24px; box-sizing: border-box; font-size: 20px; color: rgba(230,255,248,0.7)">Spreadsheet · Windows</div>
+      <div style="position: absolute; left: 120px; top: 140px; width: 560px; height: 380px; border-radius: 26px; background: rgba(94,242,201,0.12); border: 1px solid rgba(94,242,201,0.4); transform: translateZ(270px); padding: 24px; box-sizing: border-box; font-size: 20px; color: rgba(230,255,248,0.8)">Terminal</div>
+      <div style="position: absolute; left: 120px; top: 140px; width: 560px; height: 380px; border-radius: 26px; background: rgba(8,40,42,0.92); border: 1.5px solid #5EF2C9; box-shadow: 0 0 60px rgba(94,242,201,0.25); transform: translateZ(360px); padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span style="font-size: 22px; font-weight: 600">Files · dante-os</span>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+          <div style="height: 90px; border-radius: 14px; background: #5EF2C9"></div>
+          <div style="height: 90px; border-radius: 14px; background: rgba(94,242,201,0.2)"></div>
+          <div style="height: 90px; border-radius: 14px; background: rgba(94,242,201,0.2)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time scrubber -->
+  <div style="position: absolute; left: 56px; bottom: 56px; width: 420px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; justify-content: space-between; font-size: 13px; color: rgba(230,255,248,0.65)"><span>This morning</span><span style="color: #5EF2C9">Now</span></div>
+    <div style="height: 4px; border-radius: 4px; background: rgba(94,242,201,0.18); position: relative"><div style="position: absolute; right: 0; top: -6px; width: 16px; height: 16px; border-radius: 99px; background: #5EF2C9"></div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
